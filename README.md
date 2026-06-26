@@ -1,4 +1,4 @@
-# DevGuard
+# dev-guardrail
 
 > Production-grade engineering quality platform - Alpha Release
 
@@ -8,9 +8,18 @@
 
 **Package:** `dev-guardrail` | **CLI:** `devguard`
 
-## ⚠️ Alpha Status
+## ⚠️ Alpha Status (v0.1.x)
 
-DevGuard is in **alpha** (v0.1.x). The core framework is production-ready, but external tool integrations are in progress. See "What Works Now" below.
+dev-guardrail is in **early alpha**. The core framework is functional, but only 3 basic checks are implemented. External tool integrations are planned but not yet built.
+
+## What Works Right Now
+
+✅ **Core Framework** - CLI, config, plugin system, scoring engine  
+✅ **Project Detection** - Auto-detects 15+ frameworks (React, Vue, Django, Laravel, etc.)  
+✅ **3 Native Checks** - Console.log, large files, TODO detection  
+✅ **Beautiful UI** - Terminal progress bars and colored output  
+✅ **Report Generation** - HTML, JSON, Markdown formats  
+✅ **Git Hooks** - Pre-commit hook installation  
 
 ## Quick Start
 
@@ -21,207 +30,208 @@ npm install -D dev-guardrail
 # Initialize
 npx devguard init
 
-# Run quality checks
+# Run checks
 npx devguard check
 ```
 
-> **Note:** Use `npx devguard` for local installs, or install globally with `npm install -g dev-guardrail`
+> **Note:** Use `npx devguard` for local installs, or `npm install -g dev-guardrail` for global access
 
-## What Works Now (v0.1.x)
+## What Gets Checked?
 
-✅ **Project Auto-Detection** - Identifies React, Vue, Next.js, Django, Laravel, and 15+ frameworks  
-✅ **Plugin Architecture** - Extensible system for custom checks  
-✅ **Scoring Engine** - Weighted quality scoring with categories  
-✅ **Beautiful Terminal UI** - Progress bars and colored output  
-✅ **Report Generation** - HTML, JSON, Markdown formats  
-✅ **Git Hooks** - Pre-commit hook installation  
-✅ **CI/CD Ready** - Works in GitHub Actions, GitLab CI, etc.  
+Currently only **3 checks** run on your code:
 
-## Native Checks (Built-in)
+1. **Console.log Detection** - Finds `console.log()` and `debugger` in JS/TS files
+2. **Large File Detection** - Flags files >500 lines or >100KB
+3. **TODO Detection** - Finds TODO/FIXME comments (optional)
 
-These checks work out of the box:
-- **Console.log Detection** - Finds console.log/debugger statements
-- **Large File Detection** - Identifies files >500 lines or >100KB  
-- **TODO Detection** - Finds TODO/FIXME comments (optional)
+These work on any codebase regardless of language or framework.
 
-## What's Coming (In Progress)
+## What's NOT Implemented Yet ⚠️
 
-🔄 **External Tool Integration**:
-- ESLint integration
-- Prettier formatting checks
-- TypeScript compiler integration
-- Security scanning (Semgrep, Gitleaks)
-- Test coverage analysis
-- Dependency vulnerability scanning
-
-🔄 **More Framework Support**:
-- React-specific checks (hooks, props)
-- Vue-specific checks
-- Node.js best practices
-
-## Auto-Detected Frameworks
-
-DevGuard automatically detects:
-
-**Frontend:** React, Vue, Nuxt, Next.js, Angular  
-**Backend:** Node.js, Express, NestJS, Laravel, PHP, Python, Django, FastAPI, Flask  
-**Mobile:** Flutter, React Native  
-
-## CLI Commands
-- Angular
-
-### Backend
-- Node.js
-- Express
-- NestJS
-- Laravel
-- PHP
-- Python
-- FastAPI
-- Django
-
-### Mobile
-- Flutter
-- React Native
-
-### Coming Soon
-- Go
-- Rust
-- Java (Spring Boot)
-- .NET
-
-## Architecture
-
-DevGuard uses a modular plugin architecture:
-
-```
-devguard (core)
-├── @devguard/javascript
-├── @devguard/typescript
-├── @devguard/react
-├── @devguard/vue
-├── @devguard/node
-├── @devguard/python
-├── @devguard/php
-├── @devguard/docker
-├── @devguard/security
-└── @devguard/testing
-```
+- ❌ ESLint integration
+- ❌ Prettier checks
+- ❌ TypeScript compiler errors
+- ❌ Security scanning (Semgrep, Gitleaks)
+- ❌ Test coverage analysis
+- ❌ Dependency vulnerabilities
+- ❌ Dead code detection
+- ❌ Complexity analysis
+- ❌ Framework-specific checks (React hooks, Vue composition, etc.)
+- ❌ All the plugins listed in the original spec
 
 ## CLI Commands
 
 ```bash
-devguard init              # Initialize DevGuard in your project
-devguard check             # Run all quality checks
-devguard doctor            # Diagnose setup issues
-devguard score             # Show quality score
-devguard report            # Generate detailed report
-devguard fix               # Auto-fix issues where possible
-devguard review            # AI-powered code review
-devguard ci                # Run in CI mode
-devguard hooks install     # Install Git hooks
-devguard plugins list      # List available plugins
-devguard update            # Update DevGuard and plugins
+npx devguard init              # Initialize in your project
+npx devguard check             # Run the 3 checks
+npx devguard score             # Show quality score
+npx devguard report            # Generate HTML/JSON report
+npx devguard doctor            # Check setup
+npx devguard hooks             # Install git hooks
 ```
 
-## Quality Checks
+## Project Detection
 
-DevGuard orchestrates industry-standard tools:
+dev-guardrail **detects** these project types:
 
-- **Formatting**: Prettier
-- **Linting**: ESLint, PHPStan, Pylint
-- **Type Safety**: TypeScript, MyPy
-- **Security**: Semgrep, Bandit
-- **Secrets**: Gitleaks
-- **Dependencies**: npm audit, Safety
-- **Dead Code**: ts-prune
-- **Complexity**: Plato
-- **Architecture**: Dependency Cruiser
-- **Coverage**: Vitest, Jest, PHPUnit
-- **Docker**: Hadolint
-- **YAML**: yamllint
-- **Markdown**: markdownlint
+**Frontend:** React, Vue, Nuxt, Next.js, Angular  
+**Backend:** Node.js, Express, NestJS, Laravel, PHP, Python, Django, FastAPI  
+**Mobile:** Flutter, React Native  
 
-Plus native DevGuard checks:
-- Console log detection
-- TODO/FIXME detection
-- Hardcoded credentials
-- Large files/functions
-- Circular imports
-- Naming conventions
-- And more...
+> **Important:** Detection only identifies your project type during `init`. Framework-specific quality checks are not implemented yet.
 
-## Scoring
-
-Every check contributes to your overall engineering quality score:
+## How Scoring Works
 
 ```
 Overall Score: 92% (Grade A)
 ───────────────────────────
-Security      95% ████████████████████
-Type Safety   90% ██████████████████
-Linting       88% █████████████████
-Coverage      85% █████████████████
-Complexity    92% ██████████████████
-Architecture  89% ██████████████████
+Console Logs   95% ████████████████████
+File Size      88% █████████████████
+TODOs          90% ██████████████████
 ```
+
+Score is based on issues found by the 3 implemented checks.
 
 ## Configuration
 
-DevGuard generates `.devguard/config.yaml`:
+Generates `.devguard/config.yaml`:
 
 ```yaml
 quality:
   minimumScore: 85
 
-lint:
-  enabled: true
-security:
-  enabled: true
-coverage:
-  enabled: true
-complexity:
-  enabled: true
+checks:
+  consoleLog:
+    enabled: true
+  largeFile:
+    enabled: true
+  todoCheck:
+    enabled: false  # Optional
 ```
 
-## Plugin Development
+## Reports
 
-Create custom plugins:
+Generate reports with:
+
+```bash
+npx devguard report --format html
+npx devguard report --format json
+npx devguard report --format markdown
+```
+
+Reports show all detected issues with file locations and suggestions.
+
+## CI/CD Integration
+
+Use in GitHub Actions:
+
+```yaml
+name: Quality Check
+
+on: [push, pull_request]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm ci
+      - run: npx devguard check --ci
+```
+
+Works with GitLab CI, Bitbucket Pipelines, etc.
+
+## Plugin Architecture (Ready, But No Plugins Yet)
+
+The framework supports plugins:
 
 ```typescript
-import { Plugin } from '@devguard/core';
+import { Plugin, BaseCheck } from 'dev-guardrail';
 
 export const myPlugin: Plugin = {
-  name: 'my-custom-plugin',
+  name: 'my-plugin',
   version: '1.0.0',
-  checks: [
-    // Define custom checks
-  ],
-  rules: [
-    // Define custom rules
-  ],
-  scoreWeight: 0.1
+  checks: [new MyCustomCheck()],
 };
 ```
 
-## CI Integration
+The plugin system is functional - we just need to build the plugins!
 
-Generate CI configuration:
+See [Plugin Development Guide](./docs/plugin-development.md) for details.
 
-```bash
-devguard ci --platform github
-devguard ci --platform gitlab
-devguard ci --platform jenkins
-```
+## Why Publish Alpha?
+
+The **core architecture is production-ready**:
+- ✅ Plugin system works
+- ✅ Scoring engine is functional
+- ✅ CLI is stable
+- ✅ Configuration management works
+- ✅ Report generation works
+
+We're publishing early so:
+1. Developers can try the framework
+2. Community can provide feedback
+3. Contributors can help build integrations
+4. We establish the API before 1.0
+
+## Roadmap
+
+### v0.2.0 - Tool Integration (Next)
+- [ ] ESLint integration
+- [ ] Prettier integration
+- [ ] TypeScript compiler checks
+- [ ] Basic security scanning
+
+### v0.3.0 - Framework Plugins
+- [ ] React-specific checks (hooks, props)
+- [ ] Vue-specific checks
+- [ ] Node.js best practices
+
+### v0.4.0 - Advanced Features
+- [ ] Test coverage analysis
+- [ ] Dependency scanning
+- [ ] Dead code detection
+- [ ] Complexity analysis
+
+### v1.0.0 - Production Ready
+- [ ] All core integrations complete
+- [ ] VS Code extension
+- [ ] Comprehensive documentation
+- [ ] Stable API
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md)
+We welcome contributions! Priority areas:
+
+1. **Tool Integrations** - ESLint, Prettier, TypeScript, etc.
+2. **Framework Plugins** - React, Vue, Angular checks
+3. **Native Checks** - More built-in quality checks
+4. **Documentation** - Guides and examples
+5. **Feedback** - What features do you need?
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+## Documentation
+
+- [Getting Started](./docs/getting-started.md)
+- [Configuration](./docs/configuration.md)
+- [Plugin Development](./docs/plugin-development.md)
+- [Custom Rules](./docs/custom-rules.md)
+- [CI Integration](./docs/ci-integration.md)
+- [Architecture](./docs/architecture.md)
+
+## Support
+
+- 📦 [npm Package](https://www.npmjs.com/package/dev-guardrail)
+- 🐛 [Report Issues](https://github.com/your-org/dev-guardrail/issues)
+- 💬 [Discussions](https://github.com/your-org/dev-guardrail/discussions)
+- 📖 [Documentation](./docs)
 
 ## License
 
-MIT © DevGuard Contributors
+MIT © dev-guardrail Contributors
 
 ---
 
-**Star us on GitHub!** ⭐
+**Be honest about what this is:** A solid framework with 3 basic checks. The architecture is ready for plugins - we just need to build them! 🚀

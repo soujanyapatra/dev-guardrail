@@ -1,4 +1,4 @@
-# DevGuard
+# dev-guardrail
 
 > Production-grade engineering quality platform for modern development teams
 
@@ -18,13 +18,13 @@ npx devguard init
 npx devguard check
 ```
 
-That's it! DevGuard automatically detects your project type and runs comprehensive quality checks.
+That's it! dev-guardrail automatically detects your project type and runs comprehensive quality checks.
 
 > **Note:** Always use `npx devguard` when installed as a dev dependency, or install globally with `npm install -g dev-guardrail` to use `devguard` directly.
 
-## What is DevGuard?
+## What is dev-guardrail?
 
-DevGuard is like **Lighthouse for your code** - a unified engineering quality platform with a plugin architecture for quality checks.
+dev-guardrail is like **Lighthouse for your code** - a unified engineering quality platform with a plugin architecture for quality checks.
 
 **Current Status: Alpha (v0.1.x)** - Core framework is functional, external tool integrations coming soon.
 
@@ -77,7 +77,7 @@ This is an **alpha release** - the core framework works, but many features are p
 ## CLI Commands
 
 ```bash
-npx devguard init              # Initialize DevGuard
+npx devguard init              # Initialize dev-guardrail
 npx devguard check             # Run all quality checks
 npx devguard score             # Show quality score
 npx devguard report            # Generate detailed report
@@ -108,7 +108,7 @@ devguard check  # Now works without npx
 
 ## How It Works
 
-DevGuard currently provides:
+dev-guardrail currently provides:
 
 1. **Project Detection** - Automatically identifies your framework
 2. **Native Quality Checks** - Runs built-in code analysis
@@ -124,7 +124,7 @@ npx devguard report  # Generates HTML/JSON/Markdown report
 
 ## Quality Score
 
-DevGuard calculates a weighted quality score:
+dev-guardrail calculates a weighted quality score:
 
 ```
 Overall Score: 92% (Grade A)
@@ -138,7 +138,7 @@ Complexity    92% ██████████████████
 
 ## Configuration
 
-DevGuard works with zero configuration, but you can customize:
+dev-guardrail works with zero configuration, but you can customize:
 
 ```yaml
 # .devguard/config.yaml
@@ -179,7 +179,7 @@ jobs:
 
 ### Other Platforms
 
-DevGuard works with:
+dev-guardrail works with:
 - GitLab CI
 - Bitbucket Pipelines
 - Azure DevOps
@@ -189,7 +189,7 @@ DevGuard works with:
 
 ## Extensibility
 
-DevGuard has a plugin architecture for adding custom checks:
+dev-guardrail has a plugin architecture for adding custom checks:
 
 ```typescript
 import { Plugin, BaseCheck } from 'dev-guardrail';
@@ -201,7 +201,7 @@ export const myPlugin: Plugin = {
 };
 ```
 
-See [Plugin Development Guide](https://github.com/your-org/devguard/blob/main/docs/plugin-development.md) for details.
+See [Plugin Development Guide](https://github.com/your-org/dev-guardrail/blob/main/docs/plugin-development.md) for details.
 
 ## Roadmap
 
@@ -232,17 +232,17 @@ See [Plugin Development Guide](https://github.com/your-org/devguard/blob/main/do
 
 We welcome contributions! This is an open-source project built for the developer community.
 
-See [CONTRIBUTING.md](https://github.com/your-org/devguard/blob/main/CONTRIBUTING.md)
+See [CONTRIBUTING.md](https://github.com/your-org/dev-guardrail/blob/main/CONTRIBUTING.md)
 
 ## Support
 
-- 📖 [Documentation](https://github.com/your-org/devguard/tree/main/docs)
-- 🐛 [Report Issues](https://github.com/your-org/devguard/issues)
-- 💬 [Discussions](https://github.com/your-org/devguard/discussions)
+- 📖 [Documentation](https://github.com/your-org/dev-guardrail/tree/main/docs)
+- 🐛 [Report Issues](https://github.com/your-org/dev-guardrail/issues)
+- 💬 [Discussions](https://github.com/your-org/dev-guardrail/discussions)
 
 ## License
 
-MIT © DevGuard Contributors
+MIT © dev-guardrail Contributors
 
 ---
 
