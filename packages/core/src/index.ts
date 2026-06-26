@@ -19,6 +19,10 @@ export { PHPDebugCheck } from './checks/php-debug-check';
 export { PHPTodoCheck } from './checks/php-todo-check';
 export { PHPSyntaxCheck } from './checks/php-syntax-check';
 export { PHPLongMethodCheck } from './checks/php-long-method-check';
+export { ComplexityCheck } from './checks/complexity-check';
+export { DeadCodeCheck } from './checks/dead-code-check';
+export { PerformanceCheck } from './checks/performance-check';
+export { LintCheck } from './checks/lint-check';
 
 // Utilities
 export { Logger } from './utils/logger';

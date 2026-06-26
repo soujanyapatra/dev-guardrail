@@ -1,12 +1,15 @@
 # dev-guardrail
 
-> Code quality checks for JavaScript, TypeScript, and PHP projects
+> Deep code quality analysis for JavaScript, TypeScript, PHP and more — one command, zero config
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![npm](https://img.shields.io/npm/v/dev-guardrail.svg)](https://www.npmjs.com/package/dev-guardrail)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
+[![Node](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org)
 
 **Package:** `dev-guardrail` | **CLI:** `devguard`
+
+---
 
 ## Quick Start
 
@@ -14,161 +17,211 @@
 # Install
 npm install -D dev-guardrail
 
-# Initialize
+# Initialize (creates .devguard/config.yaml)
 npx devguard init
 
-# Run checks
+# Run all checks
 npx devguard check
+
+# Generate a full HTML report
+npx devguard report --format html
 ```
 
-Works on pure JS/TS projects, PHP projects, or mixed Laravel + Vue/React projects!
+Works on pure JS/TS projects, PHP projects, or mixed Laravel + Vue/React projects — zero configuration needed.
+
+---
 
 ## What It Does
 
-dev-guardrail performs deep code analysis for quality, security, and best practices - finding issues that matter before they hit production.
+dev-guardrail runs **10 deep checks** in parallel and gives you a single quality score with actionable fixes.
 
-### 🔒 Security Checks (Critical)
-- **Secret Detection**: Finds exposed API keys, passwords, tokens, AWS keys, database credentials
-- **SQL Injection**: Detects unsafe database queries and string concatenation
-- **XSS Vulnerabilities**: Identifies unescaped output and dangerous HTML injection
-- **Command Injection**: Flags unsafe shell command execution
-- **Weak Cryptography**: Detects md5/sha1 for passwords, improper hashing
+### 🔒 Security Checks
+- **Secret Detection** — API keys, passwords, tokens, AWS keys, DB credentials, JWT tokens, GitHub tokens
+- **Security Patterns** — SQL injection, XSS, `eval()`, `innerHTML`, command injection, weak crypto (md5/sha1), open redirects, SSRF, PHP `unserialize()`
+
+### 📐 Complexity Checks _(new in v0.4)_
+- **Cyclomatic complexity** per function — warns at >7, errors at >10
+- **Deep nesting** — flags code nested more than 4 levels deep
+- **Long functions** — warns at >50 lines, errors at >100 lines
+- **Long parameter lists** — >5 params triggers a suggestion to use an options object
+- **Callback hell** — detects deeply nested callbacks
+
+### 🧹 Dead Code Detection _(new in v0.4)_
+- **Unreachable code** after `return` / `throw` / `break`
+- **Commented-out code blocks** (3+ consecutive commented code lines)
+- **Always-true/false conditions** — `if (true)`, `if (1 === 1)`
+- **`debugger` statements** left in source
+
+### ⚡ Performance Checks _(new in v0.4)_
+- **`await` inside loops** — suggests `Promise.all()` for concurrency
+- **DOM queries inside loops** — suggests caching the element outside
+- **N+1 query problem** (PHP) — DB calls inside `foreach`
+- **Synchronous `fs.*Sync` calls** — blocks the Node.js event loop
+- **`addEventListener` without `removeEventListener`** — memory leak
+- **`sleep()` / `usleep()`** in PHP — blocks the process
+
+### 🔦 Linting _(new in v0.4)_
+- **Uses your ESLint** if installed — reads your existing config, runs it, reports every error/warning with the exact fix command
+- **Falls back to 12 built-in rules** if ESLint is not installed: `no-var`, `eqeqeq`, `no-trailing-spaces`, `prefer-const`, `no-alert`, `no-magic-numbers`, `max-line-length`, `no-empty-function`, and more
+- Every issue shows: `npx eslint --fix <file>` to auto-fix
 
 ### 📋 Code Quality Checks
 
-**JavaScript/TypeScript:**
-- Debug statements (`console.log`, `debugger`)
+**JavaScript / TypeScript:**
+- Console statements (`console.log`, `debugger`)
 - Large files (>700 lines or >100KB)
-- Error handling (missing try-catch, empty catch blocks, unhandled promises)
-- Naming conventions (PascalCase, camelCase, Hungarian notation)
-- Security patterns (eval, innerHTML, localStorage with secrets)
+- Error handling (missing try-catch, empty catch, unhandled promises)
+- Naming conventions (PascalCase, camelCase, no Hungarian notation)
 
 **PHP:**
 - Debug statements (`dd()`, `dump()`, `var_dump()`, `print_r()`)
-- Syntax validation (real-time PHP syntax checking)
+- Syntax validation (real PHP syntax checking)
 - Long methods (>50 lines)
-- Error handling (empty catch blocks, error suppression with @)
+- Error handling (empty catch, `@` suppression, `die()`/`exit()`)
 - Naming conventions (PSR-1 compliance)
-- Security patterns (SQL injection, XSS, command injection, unsafe unserialize)
 
 ### 📝 Optional Checks
-- TODO/FIXME comments (can be enabled in config)
+- TODO/FIXME comments (enable in config)
 
-## Supported Languages
+---
 
-**JavaScript/TypeScript:**
-- ✅ `.js`, `.mjs`, `.cjs` - JavaScript (all variants)
-- ✅ `.ts` - TypeScript
-- ✅ `.jsx`, `.tsx` - React components
-- ✅ `.vue` - Vue.js components
-- ✅ `.svelte` - Svelte components
+## Supported Languages & Files
 
-**PHP:**
-- ✅ `.php` - PHP files (Models, Controllers, Services, Routes, Migrations, etc.)
-- ✅ `.blade.php` - Laravel Blade templates
+| Extension | Language |
+|---|---|
+| `.ts`, `.tsx` | TypeScript |
+| `.js`, `.mjs`, `.cjs` | JavaScript |
+| `.jsx` | React (JS) |
+| `.vue` | Vue.js |
+| `.svelte` | Svelte |
+| `.php`, `.blade.php` | PHP / Laravel Blade |
 
-Perfect for:
-- **Laravel + Vue/React** projects (checks both backend and frontend)
-- **Laravel + Inertia.js** projects
-- **MERN/MEVN** stack applications
-- **Svelte/SvelteKit** projects
-- **Pure PHP** projects (WordPress, Drupal, Symfony, etc.)
-- **Pure JavaScript/TypeScript** projects
-- **Monorepos** with multiple tech stacks
+Perfect for: **Laravel + Vue/React**, **MERN/MEVN**, **SvelteKit**, **Next.js**, **pure PHP**, **monorepos**.
+
+---
 
 ## Example Output
 
 ```bash
 $ npx devguard check
 
-dev-guardrail - Quality Scan
-──────────────────────────────────
+DevGuard - Quality Scan
+──────────────────────────────────────────────────
+ℹ Found 87 files to scan
+ℹ Running 10 checks
+✓ secret-detection       (0 issues,   54ms)
+✓ security-patterns      (3 issues,   68ms)
+✓ console-log-detection  (12 issues,  55ms)
+✓ error-handling         (4 issues,   57ms)
+✓ complexity             (6 issues,   48ms)
+✓ dead-code              (2 issues,   44ms)
+✓ performance            (3 issues,   46ms)
+✓ lint                   (18 issues, 2100ms)
+✓ naming-convention      (0 issues,   41ms)
+✓ large-file-detection   (0 issues,   66ms)
 
-Detecting: Laravel + Vue
-Languages: PHP, JavaScript
-──────────────────────────────────
+──────────────────────────────────────────────────
 
-Overall Score: 88% (Grade B+)
-──────────────────────────────────
+  Overall Score: 78% (Grade B)
+
+──────────────────────────────────────────────────
 
 Quality Breakdown:
 
-Security         92% ███████████████████
-Lint            88% █████████████████
-Complexity      85% ████████████████
-Type Safety     90% ██████████████████
+security         85% █████████████████░░░
+lint             74% ██████████████░░░░░░
+complexity       80% ████████████████░░░░
+performance      60% ████████████░░░░░░░░
 
-──────────────────────────────────
+──────────────────────────────────────────────────
 Issues Found
-──────────────────────────────────
+──────────────────────────────────────────────────
 
 5 Errors:
-  🔐 Potential hardcoded API Key detected [no-secrets]
-  app/Services/PaymentService.php:23
-  💡 Use environment variables or a secrets manager instead of hardcoding credentials
-  
-  ⚠️ Potential SQL injection - avoid string concatenation in queries [sql-injection]
-  app/Repositories/UserRepository.php:145
-  💡 Use parameter binding: DB::select("SELECT * FROM users WHERE id = ?", [$id])
+  Potential hardcoded API Key detected [no-secrets]
+  src/services/payment.ts:23
+  💡 Use environment variables or a secrets manager
 
-  🛡️ Using md5 for passwords - insecure hashing algorithm [weak-password-hash]
-  app/Auth/LegacyAuth.php:67
-  💡 Use bcrypt: Hash::make($password) or password_hash()
+  Function 'processOrder' has cyclomatic complexity of 12 (max: 10) [cyclomatic-complexity]
+  src/services/order.ts:45
+  💡 Break into smaller, single-purpose functions
+
+  await inside loop — sequential async calls are slow [no-await-in-loop]
+  src/jobs/sync.ts:67
+  💡 Use Promise.all() to run async operations concurrently
 
 8 Warnings:
-  Found debug statement: dd() [no-debug-statements]
-  app/Http/Controllers/UserController.php:45
-  💡 Remove dd() before committing to production
+  [ESLint] 'userId' is defined but never used [no-unused-vars]
+  src/controllers/user.ts:12
+  💡 Auto-fixable → run: npx eslint --fix "src/controllers/user.ts"
 
-  Method 'processPayment' is too long (67 lines) [max-method-length]
-  app/Services/PaymentService.php:89
-  💡 Consider splitting this method into smaller methods (max 50 lines)
+  debugger statement found [no-debugger]
+  src/utils/parser.ts:89
+  💡 Remove the debugger statement
 
-  Found console.log statement [no-console]
-  resources/js/components/Dashboard.vue:142
-  💡 Remove console statements or use a proper logging library
-  
-  Empty catch block - exceptions are silently swallowed [no-empty-catch]
-  app/Services/ApiClient.php:234
-  💡 Log the exception or handle it appropriately
-
-──────────────────────────────────
-Files Scanned: 156
-Duration: 2.8s
-──────────────────────────────────
+──────────────────────────────────────────────────
+Files Scanned: 87
+Duration: 2.4s
+──────────────────────────────────────────────────
 
 For full report: npx devguard report --format html
 ```
 
+---
+
 ## CLI Commands
 
 ```bash
-npx devguard init              # Initialize in your project
-npx devguard check             # Run quality checks
-npx devguard check --verbose   # Show all issues including info
-npx devguard score             # Show quality score only
-npx devguard report            # Generate HTML/JSON report
-npx devguard doctor            # Check setup
-npx devguard hooks             # Install git hooks
+npx devguard init                        # Initialize in your project
+npx devguard check                       # Run all 10 checks
+npx devguard check --verbose             # Show all issues including info-level
+npx devguard check --ci                  # Exit non-zero if score < minimum (for CI)
+npx devguard score                       # Print quality score only
+npx devguard report --format html        # Generate premium HTML dashboard report
+npx devguard report --format json        # Machine-readable JSON
+npx devguard report --format markdown    # Markdown for docs
+npx devguard doctor                      # Diagnose setup
+npx devguard hooks                       # Install pre-commit Git hook
+npx devguard plugins list                # List installed plugins
 ```
+
+---
+
+## HTML Report
+
+The `--format html` report is a full interactive dashboard:
+
+- 📊 **Score ring** with grade (A+ → F)
+- 📋 **Summary cards** — files scanned, errors, warnings, duration
+- 📈 **Category breakdown** — colour-coded progress bars per category
+- 🔍 **Check results table** — per-check score bar, issue count, pass/fail
+- 🐛 **Filterable issues table** — filter by All / Errors / Warnings / Info
+
+```bash
+npx devguard report --format html
+# → opens reports/report.html
+```
+
+---
 
 ## Configuration
 
-Customize with `.devguard/config.yaml`:
+Customize with `.devguard/config.yaml` (auto-created by `npx devguard init`):
 
 ```yaml
 quality:
-  minimumScore: 85
+  minimumScore: 85      # CI fails below this score
+  failOnError: true
 
 checks:
   consoleLog:
     enabled: true
   largeFile:
     enabled: true
-    maxLines: 500
+    maxLines: 700
     maxSizeKB: 100
   todoCheck:
-    enabled: false
+    enabled: false       # Enable to flag TODO/FIXME comments
   phpDebug:
     enabled: true
   phpSyntax:
@@ -176,36 +229,32 @@ checks:
   phpLongMethod:
     enabled: true
     maxLines: 50
+
+exclude:
+  - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/vendor/**"
+
+plugins: []             # Add external plugin packages here
 ```
 
-## Reports
-
-Generate detailed reports:
-
-```bash
-npx devguard report --format html       # Visual HTML report with charts
-npx devguard report --format json       # Machine-readable JSON
-npx devguard report --format markdown   # Markdown for docs
-```
-
-Reports include:
-- Overall quality score and grade
-- Issues by file with line numbers
-- Suggestions for fixing each issue
-- Category breakdowns
-- Trend analysis
+---
 
 ## Git Hooks
 
-Automatically run checks before commits:
+Automatically run checks before every commit:
 
 ```bash
 npx devguard hooks
 ```
 
+Installs a `.git/hooks/pre-commit` that runs `devguard check --ci`.
+
+---
+
 ## CI/CD Integration
 
-Use in GitHub Actions:
+### GitHub Actions
 
 ```yaml
 name: Quality Check
@@ -216,90 +265,58 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
       - run: npm ci
       - run: npx devguard check --ci
 ```
 
 Also works with GitLab CI, Jenkins, CircleCI, and all major CI platforms.
 
+---
+
 ## Laravel Projects
 
-dev-guardrail works great with Laravel! It will automatically:
+dev-guardrail auto-detects Laravel and checks both PHP and frontend files:
 
-1. **Detect Laravel** - Recognizes Laravel projects
-2. **Check PHP code** - Validates controllers, models, services
-3. **Check frontend code** - If you have Vue/React in `resources/js/`
-4. **Give unified score** - Single quality score across all languages
+1. **Detects Laravel** — via `artisan` file + `app/` directory
+2. **Checks PHP code** — controllers, models, services, migrations
+3. **Checks frontend** — Vue/React files in `resources/js/`
+4. **Unified score** — single quality score across all languages
 
-**Example Laravel + Vue project:**
 ```
 my-laravel-app/
 ├── app/
-│   ├── Http/Controllers/  ← ✅ Checks PHP
-│   └── Models/            ← ✅ Checks PHP
+│   ├── Http/Controllers/  ← ✅ PHP checks (security, complexity, naming)
+│   └── Models/            ← ✅ PHP checks
 ├── resources/
 │   └── js/
-│       ├── app.js        ← ✅ Checks JavaScript
-│       └── components/   ← ✅ Checks Vue files
+│       ├── app.js         ← ✅ JS/TS checks (lint, performance, dead code)
+│       └── components/    ← ✅ Vue file checks
 ```
 
-## Pure PHP Projects
-
-Works perfectly on non-Laravel PHP projects too:
-
-```bash
-cd my-php-project
-npm init -y
-npm install -D dev-guardrail
-npx devguard init
-npx devguard check
-```
-
-Checks all `.php` files for quality issues!
-
-## Use Cases
-
-**For Developers:**
-- Catch issues before code review
-- Maintain consistent code quality
-- Learn best practices from suggestions
-
-**For Teams:**
-- Enforce coding standards
-- Prevent debug code in production
-- Keep methods and files manageable
-- Quality gates in CI/CD
-
-**For Laravel Projects:**
-- Check both backend (PHP) and frontend (JS/Vue)
-- Unified quality metrics
-- Catch common Laravel mistakes
-
-## What Makes It Special
-
-✨ **Multi-Language** - Works on both PHP and JavaScript in the same project  
-✨ **Detailed Insights** - Shows exactly where issues are and how to fix them  
-✨ **Zero Config** - Auto-detects Laravel, Vue, React, etc.  
-✨ **Fast** - Scans 100+ files in seconds  
-✨ **Actionable** - Every issue includes a suggestion  
-✨ **CI/CD Ready** - Perfect for automated quality gates  
-
-## Roadmap
-
-**v0.3** - ESLint & Prettier integration  
-**v0.4** - PHPStan integration  
-**v0.5** - Security scanning (SQL injection, XSS)  
-**v0.6** - Test coverage analysis  
-**v1.0** - Production ready with full tool ecosystem
+---
 
 ## Plugin Development
 
-Build custom checks:
+Build custom checks and ship them as npm packages:
 
 ```typescript
-import { Plugin, BaseCheck } from 'dev-guardrail';
+import { Plugin, BaseCheck, CheckContext, CheckResult, Category, Severity } from 'dev-guardrail';
+
+class MyCustomCheck extends BaseCheck {
+  name = 'my-rule';
+  category = Category.LINT;
+  description = 'My custom rule';
+
+  async run(context: CheckContext): Promise<CheckResult> {
+    const issues = [];
+    // ... your logic
+    return this.createResult(issues.length === 0, issues, 0);
+  }
+}
 
 export const myPlugin: Plugin = {
   name: 'my-plugin',
@@ -308,7 +325,37 @@ export const myPlugin: Plugin = {
 };
 ```
 
+Register in `.devguard/config.yaml`:
+
+```yaml
+plugins:
+  - my-devguard-plugin
+```
+
 See [Plugin Development Guide](./docs/plugin-development.md)
+
+---
+
+## What Makes It Special
+
+✨ **10 Deep Checks** — security, complexity, dead code, performance, lint, and more  
+✨ **ESLint-aware** — uses your existing ESLint config if present, built-in rules if not  
+✨ **Zero Config** — auto-detects Laravel, Vue, React, PHP, Next.js, etc.  
+✨ **Multi-language** — JS/TS and PHP in the same scan  
+✨ **Actionable** — every issue shows the exact command to fix it  
+✨ **Premium HTML Report** — filterable dashboard with score ring and charts  
+✨ **CI/CD Ready** — exit code 1 when quality score drops below threshold  
+
+---
+
+## Roadmap
+
+**v0.4 (current)** — Complexity, dead code, performance analysis + ESLint lint check + premium HTML report  
+**v0.5** — PHPStan integration, import/dependency analysis  
+**v0.6** — Test coverage analysis, watch mode  
+**v1.0** — Production-ready with full plugin ecosystem  
+
+---
 
 ## Contributing
 

@@ -90,11 +90,20 @@ export abstract class BaseCheck implements Check {
   }
 
   /**
-   * Filter files based on patterns
+   * Filter files based on glob-style patterns
    */
   protected filterFiles(files: string[], patterns: string[]): string[] {
-    const regex = patterns.map((p) => new RegExp(p.replace('*', '.*')));
-    return files.filter((file) => regex.some((r) => r.test(file)));
+    const regexes = patterns.map((p) => {
+      // Convert glob pattern to regex safely
+      const escaped = p
+        .replace(/\./g, '\\.')        // escape literal dots first
+        .replace(/\*\*/g, '##DSTAR##') // protect ** before handling *
+        .replace(/\*/g, '[^/]*')       // single * = anything except /
+        .replace(/##DSTAR##/g, '.*')   // ** = anything including /
+        .replace(/\?/g, '[^/]');       // ? = single char except /
+      return new RegExp(escaped + '$');
+    });
+    return files.filter((file) => regexes.some((r) => r.test(file)));
   }
 
   /**

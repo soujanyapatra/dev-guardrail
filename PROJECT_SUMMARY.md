@@ -1,143 +1,201 @@
-# DevGuard - Project Summary
+# DevGuard — Project Summary
 
 ## Overview
 
-DevGuard is a production-grade, open-source CLI and plugin ecosystem that provides a unified engineering quality platform. It's designed to be the "Lighthouse for code" - a single tool that orchestrates multiple quality checks with zero configuration.
+DevGuard is a production-grade, open-source CLI and plugin ecosystem that provides a unified engineering quality platform. It's designed to be the "Lighthouse for code" — a single tool that orchestrates multiple deep quality checks with zero configuration.
 
 ## Core Philosophy
 
 **One command to rule them all:**
 ```bash
-npm install -D devguard
+npm install -D dev-guardrail
 npx devguard init
-devguard check
+npx devguard check
 ```
 
-No manual configuration of ESLint, Prettier, TypeScript, security scanners, or dozens of other tools. DevGuard handles it all.
+No manual configuration of ESLint, Prettier, TypeScript, security scanners, or dozens of other tools. DevGuard handles it all — and if you already have ESLint configured, it uses your existing config automatically.
 
-## What's Built
+---
 
-### ✅ Core Package (`@devguard/core`)
+## What's Built (v0.4.0)
 
-**Location:** `packages/core/`
+### ✅ Core Package (`dev-guardrail`)
 
-**Key Components:**
+**Location:** `packages/core/` | **Published as:** `dev-guardrail` on npm
 
-1. **CLI Interface** (`src/cli.ts`)
-   - `devguard init` - Project initialization
-   - `devguard check` - Run all checks
-   - `devguard score` - Display quality score
-   - `devguard report` - Generate reports
-   - `devguard doctor` - Diagnose issues
-   - `devguard hooks` - Git hook management
-   - `devguard plugins` - Plugin management
+#### 1. CLI Interface (`src/cli.ts`)
+- `devguard init` — Project initialization + config file creation
+- `devguard check` — Run all 10 checks in parallel
+- `devguard check --verbose` — Show all issues including info-level
+- `devguard check --ci` — Exit code 1 if score < minimum threshold
+- `devguard score` — Display quality score only
+- `devguard report --format html|json|markdown` — Generate reports
+- `devguard doctor` — Diagnose setup issues
+- `devguard hooks` — Install/uninstall pre-commit Git hooks
+- `devguard plugins list` — List installed plugins
 
-2. **Core Systems**
-   - **ConfigManager** (`src/config/config-manager.ts`) - Configuration loading and validation
-   - **PluginManager** (`src/plugin/plugin-manager.ts`) - Plugin lifecycle management
-   - **Scanner** (`src/scanner/scanner.ts`) - Parallel check execution
-   - **ScoringEngine** (`src/scoring/scoring-engine.ts`) - Weighted score calculation
-   - **ProjectDetector** (`src/detector/project-detector.ts`) - Auto-detect frameworks
+#### 2. Core Systems
 
-3. **Native Checks**
-   - **ConsoleLogCheck** - Detects console.log/debugger statements
-   - **LargeFileCheck** - Identifies files that are too large
-   - **TodoCheck** - Finds TODO/FIXME comments
+| System | File | Purpose |
+|---|---|---|
+| `ConfigManager` | `src/config/config-manager.ts` | Load `.devguard/config.yaml`, merge with defaults |
+| `PluginManager` | `src/plugin/plugin-manager.ts` | Register plugins, collect checks |
+| `Scanner` | `src/scanner/scanner.ts` | Parallel check execution (p-limit) |
+| `ScoringEngine` | `src/scoring/scoring-engine.ts` | Weighted score + letter grade |
+| `ProjectDetector` | `src/detector/project-detector.ts` | Auto-detect frameworks, languages, tools |
+| `Logger` | `src/utils/logger.ts` | Chalk-based terminal output |
+| `FileSystem` | `src/utils/file-system.ts` | Async file I/O + glob helpers |
 
-4. **Utilities**
-   - **Logger** - Beautiful terminal output
-   - **FileSystem** - Async file operations
-   - Type definitions for extensibility
+#### 3. Native Checks (10 total)
+
+All checks run in parallel via the plugin system. Each has a `name`, `category`, `description`, and produces `Issue[]` with file, line, rule ID, and a fix suggestion.
+
+| Check | Category | Languages | What it finds |
+|---|---|---|---|
+| `SecretDetectionCheck` | Security | All | API keys, tokens, passwords, AWS keys, JWTs, private keys |
+| `SecurityPatternCheck` | Security | JS/PHP | `eval()`, SQL injection, XSS, command injection, weak hashing, SSRF |
+| `ConsoleLogCheck` | Lint | JS/TS | `console.log/debug/warn/error`, `debugger` |
+| `LargeFileCheck` | Lint | All | Files >700 lines or >100KB |
+| `ErrorHandlingCheck` | Lint | JS/PHP | Empty catch, unhandled promises, `throw "string"`, `@` suppression |
+| `NamingConventionCheck` | Lint | JS/PHP | PascalCase classes, camelCase functions, Hungarian notation |
+| `ComplexityCheck` | Complexity | JS/PHP | Cyclomatic complexity, nesting depth, long functions, long param lists |
+| `DeadCodeCheck` | Lint | JS/PHP | Unreachable code, commented-out blocks, always-true conditions, `debugger` |
+| `PerformanceCheck` | Performance | JS/PHP | `await` in loops, N+1 queries, sync fs calls, DOM queries in loops, memory leaks |
+| `LintCheck` | Lint | JS/TS/Vue | ESLint (if installed) or 12 built-in rules with fix commands |
+
+**PHP-specific checks (registered when PHP project detected):**
+- `PHPDebugCheck` — `dd()`, `dump()`, `var_dump()`, `print_r()`
+- `PHPSyntaxCheck` — Real PHP syntax validation
+- `PHPLongMethodCheck` — Methods >50 lines
+- `PHPTodoCheck` — TODO/FIXME in PHP (optional)
+- `TodoCheck` — TODO/FIXME in JS/TS (optional)
+
+#### 4. LintCheck — Smart ESLint Integration
+
+**Auto-detection flow:**
+```
+Is ESLint installed in target project?
+├── YES → Run real ESLint with --format json
+│         Parse output → report each error/warning
+│         Suggestion: npx eslint --fix <file>
+└── NO  → Run 12 built-in rules:
+          no-var, eqeqeq, no-trailing-spaces,
+          prefer-const, no-alert, no-magic-numbers,
+          max-line-length, no-empty-function,
+          no-multiple-empty-lines, no-implicit-coercion,
+          no-console-warn, no-unused-vars-hint
+          Suggestion: npm install -D eslint + npx eslint --init
+```
+
+#### 5. HTML Report (fully rewritten in v0.4)
+
+The old report was a bare-bones HTML page. The new one is a full interactive dashboard:
+
+- **Score ring** — SVG circle progress coloured by score
+- **Summary stat cards** — files, issues, errors, warnings, info, duration
+- **Category breakdown bars** — colour-coded per category
+- **Check results table** — per-check score bar, issue count, duration, pass/fail icon
+- **Filterable issues table** — All / Errors / Warnings / Info filter buttons
+- **Fix suggestions** — shown inline under each issue
+
+**Bug fixed:** Old report crashed with `result.timestamp.toISOString is not a function` when timestamp was serialised to a string. Fixed with `instanceof Date` guard.
+
+#### 6. Bug Fixes (v0.4)
+
+| Bug | Root Cause | Fix |
+|---|---|---|
+| `filterFiles` invalid regex | `p.replace('*', '.*')` turned `**/*.ts` into `.**/*.ts` | Proper glob→regex converter |
+| `chalk` / `p-limit` / `ora` ESM crash | Packages v5+ are pure ESM, project compiles to CJS | Pinned to last CJS versions |
+| HTML report `timestamp.toISOString` crash | JSON round-trip makes timestamp a string | `instanceof Date` guard added |
+
+---
 
 ## Package Structure
 
-DevGuard uses a **monorepo architecture** with clear separation:
+DevGuard uses a **monorepo architecture**:
 
-### ✅ `packages/core/` (Published as `dev-guardrail`)
+### ✅ `packages/core/` — Published as `dev-guardrail`
 
-**Core Framework:**
-- CLI, configuration, plugin system
-- Scanner, scoring engine, reports
-- Project detection
+The entire usable product lives here. All checks, CLI, scoring, and reporting.
 
-**Universal Checks** (work for all languages):
-- Secret detection
-- Large file detection  
-- TODO tracking
+```
+packages/core/src/
+├── cli.ts                      # CLI entry point (Commander.js)
+├── devguard.ts                 # Main orchestrator class
+├── checks/
+│   ├── base-check.ts           # Abstract base for all checks
+│   ├── secret-detection-check.ts
+│   ├── security-pattern-check.ts
+│   ├── console-log-check.ts
+│   ├── large-file-check.ts
+│   ├── error-handling-check.ts
+│   ├── naming-convention-check.ts
+│   ├── complexity-check.ts     ← new in v0.4
+│   ├── dead-code-check.ts      ← new in v0.4
+│   ├── performance-check.ts    ← new in v0.4
+│   ├── lint-check.ts           ← new in v0.4
+│   ├── php-debug-check.ts
+│   ├── php-syntax-check.ts
+│   ├── php-long-method-check.ts
+│   ├── php-todo-check.ts
+│   └── todo-check.ts
+├── config/
+│   └── config-manager.ts       # cosmiconfig-based YAML loader
+├── detector/
+│   └── project-detector.ts     # Framework/language auto-detection
+├── plugin/
+│   └── plugin-manager.ts       # Plugin registry + check collection
+├── scanner/
+│   └── scanner.ts              # Parallel check runner
+├── scoring/
+│   └── scoring-engine.ts       # Weighted category scoring
+├── types/
+│   └── index.ts                # All TypeScript interfaces/enums
+└── utils/
+    ├── logger.ts               # Chalk terminal output
+    └── file-system.ts          # Async fs + glob helpers
+```
 
-**Built-in Language Checks:**
-- JavaScript/TypeScript: Console logs, error handling, naming, security
-- PHP: Debug statements, syntax, long methods, error handling, naming, security
+### ⚠️ `packages/javascript/` — Future External Plugin
 
-### ⚠️ `packages/javascript/` (Future External Plugin)
-
-**Status:** Structure exists, not yet published
-
-**Purpose:** Advanced JavaScript/TypeScript checks
-- ESLint integration (planned)
-- TypeScript compiler integration (planned)
-- React/Vue/Svelte-specific checks (planned)
+**Status:** Structure exists, not yet published.  
+**Purpose:** Advanced JS/TS checks — deep ESLint integration, TypeScript compiler API, framework-specific rules.
 
 Currently, basic JavaScript checks are built into core.
 
-### ⚠️ `packages/php/` (Future External Plugin)
+### ⚠️ `packages/php/` — Future External Plugin
 
-**Status:** Structure created, not yet published
-
-**Purpose:** Advanced PHP checks
-- PHPStan integration (planned)
-- PHP_CodeSniffer integration (planned)
-- Laravel-specific checks (planned)
+**Status:** Structure created, not yet published.  
+**Purpose:** Advanced PHP — PHPStan, PHP_CodeSniffer, Laravel-specific rules.
 
 Currently, basic PHP checks are built into core.
 
-### Architecture Benefits:
+---
 
-✅ **Now:** Everything works out-of-the-box (zero config)  
-✅ **Future:** Modular plugins for advanced features  
-✅ **Scalable:** Easy to add Python, Go, Rust, etc.  
-✅ **Clean:** Clear separation between core and plugins  
+## Scoring System
 
-### ✅ Documentation
+Weighted by category (adds up to 100%):
 
-**Location:** `docs/`
+| Category | Weight |
+|---|---|
+| Security | 20% |
+| Type Safety | 15% |
+| Lint | 15% |
+| Coverage | 10% |
+| Architecture | 10% |
+| Complexity | 10% |
+| Performance | 5% |
+| Documentation | 5% |
+| Formatting | 5% |
+| Testing | 5% |
 
-1. **getting-started.md** - Quick start guide
-2. **configuration.md** - Complete configuration reference
-3. **architecture.md** - System design and architecture
-4. **plugin-development.md** - Building custom plugins
-5. **custom-rules.md** - Creating custom rules
-6. **ci-integration.md** - CI/CD setup for all major platforms
+**Grade scale:** A+ (≥95) → A (≥90) → A- (≥85) → B+ (≥80) → B (≥75) → B- (≥70) → C+ (≥65) → C (≥60) → C- (≥55) → D (≥50) → F (<50)
 
-### ✅ Examples
-
-**Location:** `examples/`
-
-1. **react-app/** - React project configuration
-2. **node-api/** - Node.js API configuration
-
-### ✅ Infrastructure
-
-1. **Monorepo Setup**
-   - Turbo for build orchestration
-   - npm workspaces
-   - Changesets for versioning
-
-2. **CI/CD**
-   - GitHub Actions workflow
-   - Automated testing and publishing
-
-3. **Code Quality**
-   - ESLint configuration
-   - Prettier setup
-   - TypeScript strict mode
-   - Vitest for testing
+---
 
 ## Architecture Highlights
 
 ### Plugin System
-
-Extensible architecture where plugins provide checks:
 
 ```typescript
 interface Plugin {
@@ -149,128 +207,37 @@ interface Plugin {
 }
 ```
 
-### Check System
+All native checks are bundled as the `@devguard/native` plugin (v0.4.0). External plugins are loaded from npm packages listed in `config.plugins`.
 
-Standardized check interface:
+### Check Interface
 
 ```typescript
 interface Check {
   name: string;
   category: Category;
+  description: string;
+  enabled: boolean;
+  weight: number;
   run(context: CheckContext): Promise<CheckResult>;
 }
 ```
 
-### Scoring Engine
+Every check extends `BaseCheck` which provides:
+- `createIssue()` — generates a typed `Issue` with unique ID
+- `createResult()` — wraps issues into `CheckResult` with score
+- `filterFiles()` — proper glob→regex file filtering
+- `measureTime()` — wraps async work and returns duration
+- `calculateScore()` — error × 10 penalty, warning × 3 penalty
 
-Weighted scoring by category:
-- Security: 20%
-- Type Safety: 15%
-- Linting: 15%
-- Coverage: 10%
-- Architecture: 10%
-- Complexity: 10%
-- Other: 20%
+---
 
-## What Can Be Extended
+## Infrastructure
 
-### Immediate Extensions
+1. **Monorepo** — Turbo + npm workspaces + Changesets for versioning
+2. **CI/CD** — GitHub Actions workflow for test + publish
+3. **Code Quality** — ESLint + Prettier + TypeScript strict mode + Vitest
 
-1. **More Native Checks**
-   - Hardcoded credentials detection
-   - Circular dependency detection
-   - Import order validation
-   - Naming convention checks
-   - Unused dependencies
-   - Missing error handling
-
-2. **External Tool Integration Plugins**
-   - ESLint integration for advanced linting
-   - PHPStan for static analysis
-   - Prettier for code formatting
-   - Security scanning tools
-
-3. **Report Formats**
-   - PDF generation
-   - Sarif format for GitHub
-   - JUnit XML for CI tools
-   - Custom templates
-
-4. **AI Review Mode**
-   - Integration with LLM APIs
-   - Code smell detection
-   - Architecture recommendations
-   - Refactoring suggestions
-
-5. **VS Code Extension**
-   - Live quality score in status bar
-   - Inline issue highlighting
-   - Quick fix actions
-   - Dashboard panel
-
-### Future Enhancements
-
-1. **Incremental Mode**
-   - Git diff-based scanning
-   - Cache previous results
-   - Fast feedback loop
-
-2. **Watch Mode**
-   - Real-time checking during development
-   - File watcher integration
-
-3. **Fix Mode**
-   - Auto-fix for fixable issues
-   - Interactive fix prompts
-
-4. **Trend Analysis**
-   - Historical score tracking
-   - Progress visualization
-   - Technical debt metrics
-
-5. **Team Features**
-   - Shared configurations
-   - Team dashboards
-   - Comparison reports
-
-## Technology Stack
-
-- **Language:** TypeScript 5.3 (strict mode)
-- **Runtime:** Node.js 18+
-- **Build:** Turbo + tsup
-- **CLI:** Commander.js
-- **Config:** Cosmiconfig
-- **Testing:** Vitest
-- **UI:** Chalk + Ora
-- **File Ops:** glob + js-yaml
-
-## Project Structure
-
-```
-devguard/
-├── packages/
-│   ├── core/                 # Core framework
-│   │   ├── src/
-│   │   │   ├── cli.ts        # CLI entry point
-│   │   │   ├── devguard.ts   # Main class
-│   │   │   ├── checks/       # Native checks
-│   │   │   ├── config/       # Configuration
-│   │   │   ├── detector/     # Project detection
-│   │   │   ├── plugin/       # Plugin system
-│   │   │   ├── scanner/      # Check orchestration
-│   │   │   ├── scoring/      # Score calculation
-│   │   │   ├── types/        # TypeScript types
-│   │   │   └── utils/        # Utilities
-│   │   └── package.json
-│   └── javascript/           # JS/TS plugin
-├── docs/                     # Documentation
-├── examples/                 # Example projects
-├── .github/                  # CI workflows
-├── README.md                 # Main readme
-├── CONTRIBUTING.md           # Contribution guide
-├── LICENSE                   # MIT license
-└── package.json              # Root package
-```
+---
 
 ## Getting Started (For Contributors)
 
@@ -282,103 +249,92 @@ cd devguard
 # Install dependencies
 npm install
 
-# Build all packages
+# Build core package
+cd packages/core
 npm run build
 
-# Run tests
-npm test
+# Watch mode during development
+npm run dev
 
-# Link for local development
-cd packages/core
-npm link
+# Run against this repo itself
+node dist/cli.js check
 
-# Use in another project
-cd /path/to/test-project
-npm link devguard
-devguard init
+# Generate HTML report
+node dist/cli.js report --format html
 ```
+
+---
 
 ## Next Steps
 
 ### High Priority
 
-1. **Complete JavaScript Plugin**
-   - Finish ESLint integration
-   - Add Prettier integration
-   - Implement dead code detection
+1. **PHPStan Integration**
+   - Run PHPStan if installed, parse output, show results
 
-2. **Add Security Plugin**
-   - Semgrep integration
-   - Gitleaks for secrets
-   - Dependency audit wrapper
+2. **Watch Mode**
+   - File watcher for real-time feedback during development
 
-3. **Testing Coverage**
-   - Unit tests for all checks
-   - Integration tests for CLI
+3. **Test Coverage**
+   - Unit tests for all 10 checks
+   - Integration tests for CLI commands
    - E2E tests with real projects
 
-4. **Report Generation**
-   - Complete HTML report with charts
-   - PDF export functionality
-   - Terminal UI improvements
+4. **Incremental Scanning**
+   - Git diff-based — only scan changed files
+   - Cache previous results for speed
 
 ### Medium Priority
 
-1. **More Framework Support**
-   - React plugin
-   - Vue plugin
-   - Angular plugin
+1. **VS Code Extension**
+   - Live quality score in status bar
+   - Inline issue highlighting
 
-2. **Performance Optimization**
-   - Parallel file processing
-   - Result caching
-   - Incremental scanning
+2. **Fix Mode**
+   - `devguard fix` — auto-apply fixable issues
+   - Interactive prompt for unfixable ones
 
-3. **VS Code Extension**
-   - Basic extension scaffold
-   - Live quality indicator
-   - Problem integration
+3. **Trend Analysis**
+   - Historical score tracking between runs
+   - `devguard report --diff` to see regression
+
+4. **Additional Framework Checks**
+   - React hooks rules
+   - Vue composition API patterns
+   - Angular best practices
 
 ### Low Priority
 
-1. **AI Review Mode**
-   - LLM integration
-   - Code analysis prompts
+1. **AI Review Mode** — LLM integration for code smell detection
+2. **Web Dashboard** — Hosted team reporting
+3. **PDF Export** — From HTML report
+4. **SARIF Format** — For GitHub Code Scanning integration
 
-2. **Web Dashboard**
-   - Hosted reporting
-   - Team collaboration
+---
 
-3. **Mobile Support**
-   - React Native checks
-   - Flutter checks
+## Success Metrics (v0.4 Status)
 
-## Success Metrics
+| Feature | Status |
+|---|---|
+| Zero-config initialization | ✅ |
+| Single command execution | ✅ |
+| Security checks | ✅ |
+| Complexity analysis | ✅ |
+| Dead code detection | ✅ |
+| Performance anti-pattern detection | ✅ |
+| Linting (ESLint + built-in rules) | ✅ |
+| Premium HTML report | ✅ |
+| Markdown report | ✅ |
+| JSON report | ✅ |
+| Git hooks | ✅ |
+| CI mode | ✅ |
+| Plugin API | ✅ |
+| PHP support | ✅ |
+| Test coverage | 🔄 needs more |
+| PHPStan integration | 🔄 planned v0.5 |
+| Watch mode | 🔄 planned v0.6 |
 
-1. **Developer Experience**
-   - Zero-config initialization: ✅
-   - Single command execution: ✅
-   - Clear output: ✅
-   - Fast performance: 🔄 (needs optimization)
-
-2. **Quality Coverage**
-   - Linting: ✅
-   - Formatting: 🔄 (plugin needed)
-   - Security: 🔄 (plugin needed)
-   - Type Safety: ✅
-   - Complexity: ✅
-   - Architecture: 🔄 (plugin needed)
-
-3. **Extensibility**
-   - Plugin API: ✅
-   - Custom rules: ✅
-   - Configuration: ✅
-
-4. **Production Ready**
-   - Tests: 🔄 (needs more coverage)
-   - Documentation: ✅
-   - CI/CD: ✅
-   - Publishing: 🔄 (needs setup)
+---
 
 ## Contributing
 
@@ -386,7 +342,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ## License
 
-MIT - See [LICENSE](./LICENSE)
+MIT — See [LICENSE](./LICENSE)
 
 ---
 
