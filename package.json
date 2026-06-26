@@ -1,0 +1,33 @@
+{
+  "name": "devguard-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Production-grade engineering quality platform",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@types/node": "^20.11.19",
+    "prettier": "^3.2.5",
+    "turbo": "^1.12.4",
+    "typescript": "^5.3.3",
+    "vitest": "^1.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "packageManager": "npm@10.2.4"
+}

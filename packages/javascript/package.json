@@ -1,0 +1,45 @@
+{
+  "name": "@devguard/javascript",
+  "version": "0.1.0",
+  "description": "JavaScript/TypeScript plugin for DevGuard",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "test": "vitest run",
+    "lint": "eslint src --ext .ts",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "devguard",
+    "javascript",
+    "typescript",
+    "eslint",
+    "quality"
+  ],
+  "author": "DevGuard Contributors",
+  "license": "MIT",
+  "dependencies": {
+    "@devguard/core": "workspace:*",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3",
+    "vitest": "^1.3.1"
+  },
+  "peerDependencies": {
+    "@devguard/core": "^0.1.0"
+  }
+}
