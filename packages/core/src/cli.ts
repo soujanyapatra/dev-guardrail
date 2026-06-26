@@ -3,6 +3,35 @@
 import { Command } from 'commander';
 import { DevGuard } from './devguard';
 import { Logger } from './utils/logger';
+import { spawn } from 'child_process';
+import { join, resolve } from 'path';
+
+/**
+ * Open a file path in the system default browser / app.
+ * Works on Linux (xdg-open), macOS (open), and Windows (start).
+ */
+function openInBrowser(filePath: string): void {
+  const absPath = resolve(filePath);
+  const platform = process.platform;
+
+  let cmd: string;
+  let args: string[];
+
+  if (platform === 'darwin') {
+    cmd = 'open';
+    args = [absPath];
+  } else if (platform === 'win32') {
+    cmd = 'cmd';
+    args = ['/c', 'start', '', absPath];
+  } else {
+    // Linux and others
+    cmd = 'xdg-open';
+    args = [absPath];
+  }
+
+  const child = spawn(cmd, args, { detached: true, stdio: 'ignore' });
+  child.unref(); // Don't wait for the browser to close
+}
 
 const logger = new Logger();
 const program = new Command();
@@ -155,15 +184,27 @@ program
   .description('Generate detailed quality report')
   .option('-f, --format <format>', 'Report format (json, html, markdown)', 'json')
   .option('-o, --output <path>', 'Output file path')
+  .option('--no-open', 'Do not auto-open HTML report in browser')
   .action(async (options) => {
     try {
       const projectPath = process.cwd();
       const devguard = new DevGuard(projectPath);
-      
+
       logger.info('Generating report...');
       await devguard.report(options.format, options.output);
-      
-      logger.success(`Report generated: ${options.output || 'reports/'}`);
+
+      // Resolve the actual output file path
+      const ext = options.format.toLowerCase();
+      const outputFile = options.output
+        || join(projectPath, 'reports', `report.${ext === 'markdown' ? 'md' : ext}`);
+
+      logger.success(`Report generated: ${outputFile}`);
+
+      // Auto-open HTML report in browser (skip with --no-open)
+      if (ext === 'html' && options.open !== false) {
+        logger.info('Opening report in browser...');
+        openInBrowser(outputFile);
+      }
     } catch (error) {
       logger.error(`Report generation failed: ${(error as Error).message}`);
       process.exit(1);
