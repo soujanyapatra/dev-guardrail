@@ -37,7 +37,17 @@ const DEFAULT_CONFIG: DevGuardConfig = {
     '**/.git/**',
     '**/vendor/**',
   ],
-  include: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+  include: [
+    '**/*.ts',
+    '**/*.tsx',
+    '**/*.js',
+    '**/*.jsx',
+    '**/*.mjs',
+    '**/*.cjs',
+    '**/*.vue',
+    '**/*.svelte',
+    '**/*.php',
+  ],
   plugins: [],
 };
 
