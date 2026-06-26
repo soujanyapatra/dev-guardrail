@@ -10,13 +10,16 @@
 
 ## ⚠️ Alpha Status (v0.1.x)
 
-dev-guardrail is in **early alpha**. The core framework is functional, but only 3 basic checks are implemented. External tool integrations are planned but not yet built.
+dev-guardrail is in **early alpha**. Currently:
+
+- ✅ Only **JavaScript/TypeScript** files are checked
+- ✅ Only **3 basic checks** are implemented
+- ❌ Python, PHP, and other languages are **not supported**
 
 ## What Works Right Now
 
-✅ **Core Framework** - CLI, config, plugin system, scoring engine  
-✅ **Project Detection** - Auto-detects 15+ frameworks (React, Vue, Django, Laravel, etc.)  
-✅ **3 Native Checks** - Console.log, large files, TODO detection  
+✅ **JavaScript/TypeScript only** - Checks JS, TS, JSX, TSX files  
+✅ **3 Basic Checks** - Console.log, large files, TODO detection  
 ✅ **Beautiful UI** - Terminal progress bars and colored output  
 ✅ **Report Generation** - HTML, JSON, Markdown formats  
 ✅ **Git Hooks** - Pre-commit hook installation  
@@ -38,16 +41,40 @@ npx devguard check
 
 ## What Gets Checked?
 
-Currently only **3 checks** run on your code:
+Currently only **3 checks** run on **JavaScript/TypeScript files** only:
 
-1. **Console.log Detection** - Finds `console.log()` and `debugger` in JS/TS files
-2. **Large File Detection** - Flags files >500 lines or >100KB
-3. **TODO Detection** - Finds TODO/FIXME comments (optional)
+1. **Console.log Detection** - Finds `console.log()` and `debugger` in `.js`, `.ts`, `.jsx`, `.tsx` files
+2. **Large File Detection** - Flags any file >500 lines or >100KB (works on all file types)
+3. **TODO Detection** - Finds TODO/FIXME comments in any file (optional)
 
-These work on any codebase regardless of language or framework.
+> **Important:** Checks currently only work on JavaScript/TypeScript projects. Python, PHP, Laravel, Django files are not checked yet.
+
+## Project Detection vs. Quality Checks
+
+**Detection ≠ Checks**
+
+- ✅ **Detection works** - dev-guardrail can identify React, Vue, Django, Laravel, PHP, Python projects
+- ❌ **Checks don't work** - Only JS/TS files are actually analyzed for quality issues
+
+When you run `npx devguard init` on a Python/PHP/Laravel project:
+- It will detect the project type ✅
+- It will create config files ✅  
+- But `npx devguard check` will only find issues in JS/TS files ⚠️
+
+**Example:** In a Laravel project with JS frontend:
+- ✅ Detects: "Laravel + JavaScript"
+- ✅ Checks: JavaScript files for console.log, large files, TODOs
+- ❌ Doesn't check: PHP code, Laravel-specific issues
 
 ## What's NOT Implemented Yet ⚠️
 
+**Language Support:**
+- ❌ Python file checking
+- ❌ PHP file checking
+- ❌ Dart/Flutter file checking
+- ❌ Any non-JS/TS language
+
+**Tool Integration:**
 - ❌ ESLint integration
 - ❌ Prettier checks
 - ❌ TypeScript compiler errors
@@ -56,8 +83,13 @@ These work on any codebase regardless of language or framework.
 - ❌ Dependency vulnerabilities
 - ❌ Dead code detection
 - ❌ Complexity analysis
-- ❌ Framework-specific checks (React hooks, Vue composition, etc.)
-- ❌ All the plugins listed in the original spec
+
+**Framework-Specific:**
+- ❌ React hooks validation
+- ❌ Vue composition API checks
+- ❌ Django best practices
+- ❌ Laravel validation
+- ❌ Any framework-specific checks
 
 ## CLI Commands
 
@@ -70,6 +102,20 @@ npx devguard doctor            # Check setup
 npx devguard hooks             # Install git hooks
 ```
 
+## Supported Languages
+
+**Currently Supported:**
+- ✅ JavaScript (`.js`, `.jsx`)
+- ✅ TypeScript (`.ts`, `.tsx`)
+
+**Not Supported Yet:**
+- ❌ Python (`.py`)
+- ❌ PHP (`.php`)
+- ❌ Dart (`.dart` - Flutter)
+- ❌ Other languages
+
+**Why?** The 3 native checks are written for JS/TS only. Support for other languages requires building language-specific checks.
+
 ## Project Detection
 
 dev-guardrail **detects** these project types:
@@ -78,7 +124,7 @@ dev-guardrail **detects** these project types:
 **Backend:** Node.js, Express, NestJS, Laravel, PHP, Python, Django, FastAPI  
 **Mobile:** Flutter, React Native  
 
-> **Important:** Detection only identifies your project type during `init`. Framework-specific quality checks are not implemented yet.
+> **⚠️ IMPORTANT:** Detection means it recognizes your project type during `init`. It does NOT mean it checks those files for quality issues. Only JS/TS files are actually checked.
 
 ## How Scoring Works
 
@@ -181,14 +227,20 @@ We're publishing early so:
 - [ ] ESLint integration
 - [ ] Prettier integration
 - [ ] TypeScript compiler checks
-- [ ] Basic security scanning
+- [ ] Basic security scanning (JS/TS only)
 
-### v0.3.0 - Framework Plugins
+### v0.3.0 - Multi-Language Support
+- [ ] Python file checking (Pylint, MyPy)
+- [ ] PHP file checking (PHPStan)
+- [ ] More native checks for JS/TS
+
+### v0.4.0 - Framework Plugins
 - [ ] React-specific checks (hooks, props)
 - [ ] Vue-specific checks
-- [ ] Node.js best practices
+- [ ] Django checks (Python)
+- [ ] Laravel checks (PHP)
 
-### v0.4.0 - Advanced Features
+### v0.5.0 - Advanced Features
 - [ ] Test coverage analysis
 - [ ] Dependency scanning
 - [ ] Dead code detection
@@ -196,6 +248,7 @@ We're publishing early so:
 
 ### v1.0.0 - Production Ready
 - [ ] All core integrations complete
+- [ ] Full multi-language support
 - [ ] VS Code extension
 - [ ] Comprehensive documentation
 - [ ] Stable API
