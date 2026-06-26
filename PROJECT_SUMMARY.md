@@ -49,13 +49,54 @@ No manual configuration of ESLint, Prettier, TypeScript, security scanners, or d
    - **FileSystem** - Async file operations
    - Type definitions for extensibility
 
-### ⚠️ JavaScript Plugin Package (Not Published)
+## Package Structure
 
-**Location:** `packages/javascript/`
+DevGuard uses a **monorepo architecture** with clear separation:
 
-**Status:** Code exists but is **not published to npm** and **not used** by the core package.
+### ✅ `packages/core/` (Published as `dev-guardrail`)
 
-Contains experimental ESLint and TypeScript integration code that could be completed in future versions.
+**Core Framework:**
+- CLI, configuration, plugin system
+- Scanner, scoring engine, reports
+- Project detection
+
+**Universal Checks** (work for all languages):
+- Secret detection
+- Large file detection  
+- TODO tracking
+
+**Built-in Language Checks:**
+- JavaScript/TypeScript: Console logs, error handling, naming, security
+- PHP: Debug statements, syntax, long methods, error handling, naming, security
+
+### ⚠️ `packages/javascript/` (Future External Plugin)
+
+**Status:** Structure exists, not yet published
+
+**Purpose:** Advanced JavaScript/TypeScript checks
+- ESLint integration (planned)
+- TypeScript compiler integration (planned)
+- React/Vue/Svelte-specific checks (planned)
+
+Currently, basic JavaScript checks are built into core.
+
+### ⚠️ `packages/php/` (Future External Plugin)
+
+**Status:** Structure created, not yet published
+
+**Purpose:** Advanced PHP checks
+- PHPStan integration (planned)
+- PHP_CodeSniffer integration (planned)
+- Laravel-specific checks (planned)
+
+Currently, basic PHP checks are built into core.
+
+### Architecture Benefits:
+
+✅ **Now:** Everything works out-of-the-box (zero config)  
+✅ **Future:** Modular plugins for advanced features  
+✅ **Scalable:** Easy to add Python, Go, Rust, etc.  
+✅ **Clean:** Clear separation between core and plugins  
 
 ### ✅ Documentation
 

@@ -25,30 +25,56 @@ Works on pure JS/TS projects, PHP projects, or mixed Laravel + Vue/React project
 
 ## What It Does
 
-dev-guardrail checks your code for common issues and gives you a quality score with detailed insights.
+dev-guardrail performs deep code analysis for quality, security, and best practices - finding issues that matter before they hit production.
 
-### JavaScript/TypeScript Checks
-- 🔍 Finds `console.log()` and `debugger` statements
-- 📏 Detects large files (>500 lines or >100KB)
-- 📝 Flags TODO/FIXME comments
+### 🔒 Security Checks (Critical)
+- **Secret Detection**: Finds exposed API keys, passwords, tokens, AWS keys, database credentials
+- **SQL Injection**: Detects unsafe database queries and string concatenation
+- **XSS Vulnerabilities**: Identifies unescaped output and dangerous HTML injection
+- **Command Injection**: Flags unsafe shell command execution
+- **Weak Cryptography**: Detects md5/sha1 for passwords, improper hashing
 
-### PHP Checks  
-- 🐛 Finds debug statements (`dd()`, `dump()`, `var_dump()`, `print_r()`)
-- ✅ Validates PHP syntax
-- 📏 Detects long methods (>50 lines)
-- 📝 Flags TODO/FIXME comments in PHP
+### 📋 Code Quality Checks
+
+**JavaScript/TypeScript:**
+- Debug statements (`console.log`, `debugger`)
+- Large files (>700 lines or >100KB)
+- Error handling (missing try-catch, empty catch blocks, unhandled promises)
+- Naming conventions (PascalCase, camelCase, Hungarian notation)
+- Security patterns (eval, innerHTML, localStorage with secrets)
+
+**PHP:**
+- Debug statements (`dd()`, `dump()`, `var_dump()`, `print_r()`)
+- Syntax validation (real-time PHP syntax checking)
+- Long methods (>50 lines)
+- Error handling (empty catch blocks, error suppression with @)
+- Naming conventions (PSR-1 compliance)
+- Security patterns (SQL injection, XSS, command injection, unsafe unserialize)
+
+### 📝 Optional Checks
+- TODO/FIXME comments (can be enabled in config)
 
 ## Supported Languages
 
-- ✅ JavaScript (`.js`, `.jsx`)
-- ✅ TypeScript (`.ts`, `.tsx`)
-- ✅ PHP (`.php`)
+**JavaScript/TypeScript:**
+- ✅ `.js`, `.mjs`, `.cjs` - JavaScript (all variants)
+- ✅ `.ts` - TypeScript
+- ✅ `.jsx`, `.tsx` - React components
+- ✅ `.vue` - Vue.js components
+- ✅ `.svelte` - Svelte components
+
+**PHP:**
+- ✅ `.php` - PHP files (Models, Controllers, Services, Routes, Migrations, etc.)
+- ✅ `.blade.php` - Laravel Blade templates
 
 Perfect for:
-- **Laravel + Vue** projects
-- **Laravel + React** projects
-- **Pure PHP** projects
+- **Laravel + Vue/React** projects (checks both backend and frontend)
+- **Laravel + Inertia.js** projects
+- **MERN/MEVN** stack applications
+- **Svelte/SvelteKit** projects
+- **Pure PHP** projects (WordPress, Drupal, Symfony, etc.)
 - **Pure JavaScript/TypeScript** projects
+- **Monorepos** with multiple tech stacks
 
 ## Example Output
 
@@ -67,36 +93,48 @@ Overall Score: 88% (Grade B+)
 
 Quality Breakdown:
 
-Console Logs     95% ████████████████████
-File Size        88% █████████████████
-Debug Code       82% ████████████████
-Method Length    90% ██████████████████
+Security         92% ███████████████████
+Lint            88% █████████████████
+Complexity      85% ████████████████
+Type Safety     90% ██████████████████
 
 ──────────────────────────────────
 Issues Found
 ──────────────────────────────────
 
-3 Errors:
+5 Errors:
+  🔐 Potential hardcoded API Key detected [no-secrets]
+  app/Services/PaymentService.php:23
+  💡 Use environment variables or a secrets manager instead of hardcoding credentials
+  
+  ⚠️ Potential SQL injection - avoid string concatenation in queries [sql-injection]
+  app/Repositories/UserRepository.php:145
+  💡 Use parameter binding: DB::select("SELECT * FROM users WHERE id = ?", [$id])
+
+  🛡️ Using md5 for passwords - insecure hashing algorithm [weak-password-hash]
+  app/Auth/LegacyAuth.php:67
+  💡 Use bcrypt: Hash::make($password) or password_hash()
+
+8 Warnings:
   Found debug statement: dd() [no-debug-statements]
   app/Http/Controllers/UserController.php:45
   💡 Remove dd() before committing to production
 
-  Found debug statement: var_dump() [no-debug-statements]
-  app/Models/User.php:128
-  💡 Remove var_dump() before committing to production
-
-5 Warnings:
-  Method 'processUserData' is too long (67 lines) [max-method-length]
-  app/Services/UserService.php:89
+  Method 'processPayment' is too long (67 lines) [max-method-length]
+  app/Services/PaymentService.php:89
   💡 Consider splitting this method into smaller methods (max 50 lines)
 
   Found console.log statement [no-console]
   resources/js/components/Dashboard.vue:142
   💡 Remove console statements or use a proper logging library
+  
+  Empty catch block - exceptions are silently swallowed [no-empty-catch]
+  app/Services/ApiClient.php:234
+  💡 Log the exception or handle it appropriately
 
 ──────────────────────────────────
 Files Scanned: 156
-Duration: 2.3s
+Duration: 2.8s
 ──────────────────────────────────
 
 For full report: npx devguard report --format html

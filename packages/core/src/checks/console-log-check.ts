@@ -13,7 +13,16 @@ export class ConsoleLogCheck extends BaseCheck {
   async run(context: CheckContext): Promise<CheckResult> {
     const [issues, duration] = await this.measureTime(async () => {
       const issues: Issue[] = [];
-      const files = this.filterFiles(context.files, ['**/*.ts', '**/*.js', '**/*.tsx', '**/*.jsx']);
+      const files = this.filterFiles(context.files, [
+        '**/*.ts',
+        '**/*.js',
+        '**/*.tsx',
+        '**/*.jsx',
+        '**/*.vue',
+        '**/*.svelte',
+        '**/*.mjs',
+        '**/*.cjs',
+      ]);
 
       for (const file of files) {
         // Skip test files

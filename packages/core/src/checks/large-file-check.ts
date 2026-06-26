@@ -10,7 +10,7 @@ export class LargeFileCheck extends BaseCheck {
   category = Category.COMPLEXITY;
   description = 'Detects files that are too large and should be split';
 
-  private readonly MAX_LINES = 500;
+  private readonly MAX_LINES = 700;
   private readonly MAX_SIZE_KB = 100;
 
   async run(context: CheckContext): Promise<CheckResult> {

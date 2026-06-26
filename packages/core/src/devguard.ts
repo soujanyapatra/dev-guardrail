@@ -13,6 +13,10 @@ import { PHPDebugCheck } from './checks/php-debug-check';
 import { PHPTodoCheck } from './checks/php-todo-check';
 import { PHPSyntaxCheck } from './checks/php-syntax-check';
 import { PHPLongMethodCheck } from './checks/php-long-method-check';
+import { SecretDetectionCheck } from './checks/secret-detection-check';
+import { NamingConventionCheck } from './checks/naming-convention-check';
+import { ErrorHandlingCheck } from './checks/error-handling-check';
+import { SecurityPatternCheck } from './checks/security-pattern-check';
 
 /**
  * Main DevGuard class
@@ -246,9 +250,15 @@ npx devguard check --ci
     
     const checks = [];
     
+    // Core security checks (always enabled)
+    checks.push(new SecretDetectionCheck());
+    checks.push(new SecurityPatternCheck());
+    
     // JavaScript/TypeScript checks
     checks.push(new ConsoleLogCheck());
     checks.push(new LargeFileCheck());
+    checks.push(new ErrorHandlingCheck());
+    checks.push(new NamingConventionCheck());
     
     if (config.checks.todoCheck?.enabled) {
       checks.push(new TodoCheck());
@@ -268,8 +278,8 @@ npx devguard check --ci
 
     const nativePlugin = {
       name: '@devguard/native',
-      version: '0.2.0',
-      description: 'Native DevGuard checks for JavaScript/TypeScript and PHP',
+      version: '0.3.0',
+      description: 'Native DevGuard checks for JavaScript/TypeScript and PHP with comprehensive security analysis',
       checks,
     };
 
