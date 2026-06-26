@@ -24,20 +24,55 @@ That's it! DevGuard automatically detects your project type and runs comprehensi
 
 ## What is DevGuard?
 
-DevGuard is like **Lighthouse for your code** - a unified engineering quality platform that orchestrates multiple quality tools under one simple interface.
+DevGuard is like **Lighthouse for your code** - a unified engineering quality platform with a plugin architecture for quality checks.
 
-Instead of manually configuring ESLint, Prettier, TypeScript, security scanners, and dozens of other tools, DevGuard handles everything with zero configuration.
+**Current Status: Alpha (v0.1.x)** - Core framework is functional, external tool integrations coming soon.
 
-## Features
+## What Works Now (v0.1.x)
 
-- ✅ **Zero Configuration** - Works out of the box
-- ✅ **Auto-Detection** - Detects your project type automatically  
-- ✅ **Quality Score** - Get an overall engineering health score (0-100)
-- ✅ **Multiple Checks** - Linting, security, complexity, and more
-- ✅ **Beautiful Reports** - HTML, JSON, and Markdown outputs
-- ✅ **Git Hooks** - Automatic pre-commit checks
-- ✅ **CI/CD Ready** - Easy integration with all CI platforms
-- ✅ **Extensible** - Plugin architecture for custom checks
+✅ **Project Detection** - Auto-detects 15+ frameworks (React, Vue, Next.js, Django, Laravel, etc.)  
+✅ **Configuration System** - YAML-based configuration with sensible defaults  
+✅ **Plugin Architecture** - Extensible system for adding checks  
+✅ **Scoring Engine** - Weighted quality scoring (0-100)  
+✅ **Beautiful Terminal UI** - Progress bars and color-coded output  
+✅ **Report Generation** - HTML, JSON, and Markdown formats  
+✅ **Git Hooks** - Pre-commit hook installation  
+✅ **CI/CD Integration** - Works in CI environments  
+
+## Native Checks (Built-in)
+
+These checks work right now:
+- **Console Log Detection** - Finds console.log/debugger statements
+- **Large File Detection** - Identifies files >500 lines or >100KB
+- **TODO Detection** - Finds TODO/FIXME comments (optional)
+
+## Coming Soon
+
+🔄 **External Tool Integration** (in progress):
+- ESLint integration
+- Prettier integration
+- TypeScript compiler checks
+- Security scanning (Semgrep, Gitleaks)
+- Test coverage analysis
+- Dependency auditing
+- Dead code detection
+- Complexity analysis
+
+🔄 **More Native Checks**:
+- Hardcoded credentials detection
+- Circular dependency detection
+- Naming convention validation
+- Import order checking
+
+## Current Limitations
+
+⚠️ **What's NOT implemented yet**:
+- External linter integration (ESLint, Prettier, etc.)
+- Security scanning tools
+- Coverage analysis
+- Most advanced checks from the roadmap
+
+This is an **alpha release** - the core framework works, but many features are planned for future releases.
 
 ## CLI Commands
 
@@ -71,14 +106,21 @@ npm install -g dev-guardrail
 devguard check  # Now works without npx
 ```
 
-## Built-in Checks
+## How It Works
 
-DevGuard includes native checks:
+DevGuard currently provides:
 
-- **Console Log Detection** - Finds console.log and debugger statements
-- **Large File Detection** - Identifies files that should be split
-- **TODO Detection** - Finds TODO/FIXME comments
-- More coming soon!
+1. **Project Detection** - Automatically identifies your framework
+2. **Native Quality Checks** - Runs built-in code analysis
+3. **Scoring** - Calculates weighted quality score
+4. **Reporting** - Generates beautiful reports
+
+```bash
+npx devguard init    # Creates .devguard/config.yaml
+npx devguard check   # Runs all enabled checks
+npx devguard score   # Shows quality score with progress bars
+npx devguard report  # Generates HTML/JSON/Markdown report
+```
 
 ## Quality Score
 
@@ -145,34 +187,46 @@ DevGuard works with:
 - CircleCI
 - And more!
 
-## Plugin System
+## Extensibility
 
-Extend DevGuard with plugins (coming soon):
+DevGuard has a plugin architecture for adding custom checks:
 
-```bash
-npm install -D @devguard/react @devguard/security
+```typescript
+import { Plugin, BaseCheck } from 'dev-guardrail';
+
+export const myPlugin: Plugin = {
+  name: 'my-custom-plugin',
+  version: '1.0.0',
+  checks: [new MyCustomCheck()],
+};
 ```
 
-## Current Status
+See [Plugin Development Guide](https://github.com/your-org/devguard/blob/main/docs/plugin-development.md) for details.
 
-**Version 0.1.0 - Alpha Release**
+## Roadmap
 
-DevGuard is in active development. The core framework is functional with:
-- CLI interface
-- Configuration system
-- Plugin architecture
-- Native checks
-- Scoring engine
-- Report generation
+### v0.2.0 - Tool Integration
+- [ ] ESLint integration
+- [ ] Prettier integration  
+- [ ] TypeScript compiler integration
+- [ ] Basic security scanning
 
-### Roadmap
+### v0.3.0 - Framework Plugins
+- [ ] React-specific checks
+- [ ] Vue-specific checks
+- [ ] Node.js best practices
 
-- [ ] External tool integrations (ESLint, Prettier, etc.)
-- [ ] More native checks
-- [ ] Framework-specific plugins (React, Vue, etc.)
-- [ ] Security scanning (Semgrep, Gitleaks)
+### v0.4.0 - Advanced Features
+- [ ] Test coverage analysis
+- [ ] Dependency vulnerability scanning
+- [ ] Dead code detection
+- [ ] Complexity analysis
+
+### v1.0.0 - Production Ready
+- [ ] All core integrations complete
 - [ ] VS Code extension
 - [ ] AI-powered code reviews
+- [ ] Comprehensive documentation
 
 ## Contributing
 

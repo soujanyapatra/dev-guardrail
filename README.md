@@ -1,9 +1,16 @@
 # DevGuard
 
-> Production-grade engineering quality platform for modern development teams
+> Production-grade engineering quality platform - Alpha Release
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm](https://img.shields.io/npm/v/dev-guardrail.svg)](https://www.npmjs.com/package/dev-guardrail)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
+
+**Package:** `dev-guardrail` | **CLI:** `devguard`
+
+## ⚠️ Alpha Status
+
+DevGuard is in **alpha** (v0.1.x). The core framework is production-ready, but external tool integrations are in progress. See "What Works Now" below.
 
 ## Quick Start
 
@@ -18,36 +25,49 @@ npx devguard init
 npx devguard check
 ```
 
-That's it! DevGuard automatically detects your project type, installs required dependencies, and runs comprehensive quality checks.
+> **Note:** Use `npx devguard` for local installs, or install globally with `npm install -g dev-guardrail`
 
-## Installation
+## What Works Now (v0.1.x)
 
-```bash
-npm install -D dev-guardrail
-```
+✅ **Project Auto-Detection** - Identifies React, Vue, Next.js, Django, Laravel, and 15+ frameworks  
+✅ **Plugin Architecture** - Extensible system for custom checks  
+✅ **Scoring Engine** - Weighted quality scoring with categories  
+✅ **Beautiful Terminal UI** - Progress bars and colored output  
+✅ **Report Generation** - HTML, JSON, Markdown formats  
+✅ **Git Hooks** - Pre-commit hook installation  
+✅ **CI/CD Ready** - Works in GitHub Actions, GitLab CI, etc.  
 
-**Package:** `dev-guardrail` | **CLI:** `devguard`
+## Native Checks (Built-in)
 
-> Use `npx devguard` for local installs, or `npm install -g dev-guardrail` for global access
+These checks work out of the box:
+- **Console.log Detection** - Finds console.log/debugger statements
+- **Large File Detection** - Identifies files >500 lines or >100KB  
+- **TODO Detection** - Finds TODO/FIXME comments (optional)
 
-## Features
+## What's Coming (In Progress)
 
-✅ **Zero Configuration** - Works out of the box for 15+ frameworks  
-✅ **Comprehensive Checks** - Linting, security, testing, complexity, and more  
-✅ **Quality Scoring** - Get an overall engineering health score  
-✅ **AI-Powered Reviews** - Intelligent recommendations for improvements (coming soon)  
-✅ **Git Hook Integration** - Automatic pre-commit and pre-push hooks  
-✅ **Beautiful Reports** - HTML, JSON, Markdown outputs  
-✅ **CI/CD Ready** - Templates for all major CI platforms  
-✅ **Extensible** - Plugin architecture for custom checks  
+🔄 **External Tool Integration**:
+- ESLint integration
+- Prettier formatting checks
+- TypeScript compiler integration
+- Security scanning (Semgrep, Gitleaks)
+- Test coverage analysis
+- Dependency vulnerability scanning
 
-## Supported Technologies
+🔄 **More Framework Support**:
+- React-specific checks (hooks, props)
+- Vue-specific checks
+- Node.js best practices
 
-### Frontend
-- React
-- Vue
-- Nuxt
-- Next.js
+## Auto-Detected Frameworks
+
+DevGuard automatically detects:
+
+**Frontend:** React, Vue, Nuxt, Next.js, Angular  
+**Backend:** Node.js, Express, NestJS, Laravel, PHP, Python, Django, FastAPI, Flask  
+**Mobile:** Flutter, React Native  
+
+## CLI Commands
 - Angular
 
 ### Backend
