@@ -1,9 +1,12 @@
 # dev-guardrail
 
-> Production-grade engineering quality platform for modern development teams
+> Code quality checks for JavaScript/TypeScript projects
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![npm version](https://badge.fury.io/js/dev-guardrail.svg)](https://www.npmjs.com/package/dev-guardrail)
+[![npm](https://img.shields.io/npm/v/dev-guardrail.svg)](https://www.npmjs.com/package/dev-guardrail)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
+
+**Package:** `dev-guardrail` | **CLI:** `devguard`
 
 ## Quick Start
 
@@ -14,151 +17,107 @@ npm install -D dev-guardrail
 # Initialize
 npx devguard init
 
-# Run quality checks
+# Run checks
 npx devguard check
 ```
 
-That's it! dev-guardrail automatically detects your project type and runs comprehensive quality checks.
+> Use `npx devguard` for local installs, or `npm install -g dev-guardrail` for global access
 
-> **Note:** Always use `npx devguard` when installed as a dev dependency, or install globally with `npm install -g dev-guardrail` to use `devguard` directly.
+## What It Does
 
-## What is dev-guardrail?
+dev-guardrail checks your JavaScript/TypeScript code for common issues:
 
-dev-guardrail is like **Lighthouse for your code** - a unified engineering quality platform with a plugin architecture for quality checks.
+- 🔍 Finds `console.log()` and `debugger` statements
+- 📏 Detects large files that should be split
+- 📝 Flags TODO/FIXME comments (optional)
 
-**Current Status: Alpha (v0.1.x)** - Core framework is functional, external tool integrations coming soon.
+Then gives you a quality score with a beautiful terminal UI.
 
-## What Works Now (v0.1.x)
+## Supported Languages
 
-✅ **Project Detection** - Auto-detects 15+ frameworks (React, Vue, Next.js, Django, Laravel, etc.)  
-✅ **Configuration System** - YAML-based configuration with sensible defaults  
-✅ **Plugin Architecture** - Extensible system for adding checks  
-✅ **Scoring Engine** - Weighted quality scoring (0-100)  
-✅ **Beautiful Terminal UI** - Progress bars and color-coded output  
-✅ **Report Generation** - HTML, JSON, and Markdown formats  
-✅ **Git Hooks** - Pre-commit hook installation  
-✅ **CI/CD Integration** - Works in CI environments  
+- ✅ JavaScript (`.js`, `.jsx`)
+- ✅ TypeScript (`.ts`, `.tsx`)
 
-## Native Checks (Built-in)
+## How It Works
 
-These checks work right now:
-- **Console Log Detection** - Finds console.log/debugger statements
-- **Large File Detection** - Identifies files >500 lines or >100KB
-- **TODO Detection** - Finds TODO/FIXME comments (optional)
+1. **Initialize** - Run `npx devguard init` to create config
+2. **Check** - Run `npx devguard check` to scan your code
+3. **View Score** - See quality score with progress bars
+4. **Generate Reports** - Export results as HTML, JSON, or Markdown
 
-## Coming Soon
+```bash
+npx devguard check
 
-🔄 **External Tool Integration** (in progress):
-- ESLint integration
-- Prettier integration
-- TypeScript compiler checks
-- Security scanning (Semgrep, Gitleaks)
-- Test coverage analysis
-- Dependency auditing
-- Dead code detection
-- Complexity analysis
+DevGuard - Quality Scan
+──────────────────────────────────
 
-🔄 **More Native Checks**:
-- Hardcoded credentials detection
-- Circular dependency detection
-- Naming convention validation
-- Import order checking
+Overall Score: 92% (Grade A)
+──────────────────────────────────
 
-## Current Limitations
+Quality Breakdown:
 
-⚠️ **What's NOT implemented yet**:
-- External linter integration (ESLint, Prettier, etc.)
-- Security scanning tools
-- Coverage analysis
-- Most advanced checks from the roadmap
+Console Logs     95% ████████████████████
+File Size        88% █████████████████
+TODOs            90% ██████████████████
 
-This is an **alpha release** - the core framework works, but many features are planned for future releases.
+Files Scanned: 127
+Issues Found: 24
+Duration: 1.2s
+```
 
 ## CLI Commands
 
 ```bash
-npx devguard init              # Initialize dev-guardrail
-npx devguard check             # Run all quality checks
+npx devguard init              # Initialize in your project
+npx devguard check             # Run quality checks
 npx devguard score             # Show quality score
-npx devguard report            # Generate detailed report
-npx devguard doctor            # Diagnose setup issues
-npx devguard hooks             # Install Git hooks
-```
-
-### Add to package.json Scripts (Recommended)
-
-```json
-{
-  "scripts": {
-    "quality": "devguard check",
-    "quality:score": "devguard score",
-    "quality:report": "devguard report"
-  }
-}
-```
-
-Then run with `npm run quality`
-
-### Global Installation (Optional)
-
-```bash
-npm install -g dev-guardrail
-devguard check  # Now works without npx
-```
-
-## How It Works
-
-dev-guardrail currently provides:
-
-1. **Project Detection** - Automatically identifies your framework
-2. **Native Quality Checks** - Runs built-in code analysis
-3. **Scoring** - Calculates weighted quality score
-4. **Reporting** - Generates beautiful reports
-
-```bash
-npx devguard init    # Creates .devguard/config.yaml
-npx devguard check   # Runs all enabled checks
-npx devguard score   # Shows quality score with progress bars
-npx devguard report  # Generates HTML/JSON/Markdown report
-```
-
-## Quality Score
-
-dev-guardrail calculates a weighted quality score:
-
-```
-Overall Score: 92% (Grade A)
-───────────────────────────
-Security      95% ████████████████
-Type Safety   90% █████████████████
-Linting       88% █████████████████
-Coverage      85% ████████████████
-Complexity    92% ██████████████████
+npx devguard report            # Generate HTML/JSON report
+npx devguard doctor            # Check setup
+npx devguard hooks             # Install git hooks
 ```
 
 ## Configuration
 
-dev-guardrail works with zero configuration, but you can customize:
+Customize with `.devguard/config.yaml`:
 
 ```yaml
-# .devguard/config.yaml
 quality:
   minimumScore: 85
 
 checks:
-  lint:
-    enabled: true
-  security:
-    enabled: true
-  coverage:
-    enabled: true
   consoleLog:
     enabled: true
+  largeFile:
+    enabled: true
+    maxLines: 500
+    maxSizeKB: 100
+  todoCheck:
+    enabled: false
 ```
+
+## Reports
+
+Generate reports in multiple formats:
+
+```bash
+npx devguard report --format html       # Visual HTML report
+npx devguard report --format json       # Machine-readable JSON
+npx devguard report --format markdown   # Markdown for docs
+```
+
+## Git Hooks
+
+Automatically run checks before commits:
+
+```bash
+npx devguard hooks
+```
+
+This installs a pre-commit hook that runs quality checks.
 
 ## CI/CD Integration
 
-### GitHub Actions
+Use in GitHub Actions:
 
 ```yaml
 name: Quality Check
@@ -171,74 +130,77 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
       - run: npm ci
       - run: npx devguard check --ci
 ```
 
-### Other Platforms
+Works with GitLab CI, Bitbucket Pipelines, Jenkins, and all major CI platforms.
 
-dev-guardrail works with:
-- GitLab CI
-- Bitbucket Pipelines
-- Azure DevOps
-- Jenkins
-- CircleCI
-- And more!
+## Project Detection
 
-## Extensibility
+Automatically detects your project type:
+- React, Vue, Next.js, Nuxt, Angular
+- Node.js, Express, NestJS
+- And shows it during initialization
 
-dev-guardrail has a plugin architecture for adding custom checks:
+## Extensible
+
+Build custom checks with the plugin API:
 
 ```typescript
 import { Plugin, BaseCheck } from 'dev-guardrail';
 
 export const myPlugin: Plugin = {
-  name: 'my-custom-plugin',
+  name: 'my-plugin',
   version: '1.0.0',
   checks: [new MyCustomCheck()],
 };
 ```
 
-See [Plugin Development Guide](https://github.com/your-org/dev-guardrail/blob/main/docs/plugin-development.md) for details.
+See [Plugin Development Guide](./docs/plugin-development.md)
+
+## Use Cases
+
+**For Developers:**
+- Catch issues before code review
+- Maintain code quality standards
+- Track quality metrics over time
+
+**For Teams:**
+- Enforce coding standards
+- Prevent console.log in production
+- Keep files manageable size
+- CI/CD quality gates
+
+**For Projects:**
+- Onboarding new developers
+- Technical debt tracking
+- Quality monitoring
 
 ## Roadmap
 
-### v0.2.0 - Tool Integration
-- [ ] ESLint integration
-- [ ] Prettier integration  
-- [ ] TypeScript compiler integration
-- [ ] Basic security scanning
-
-### v0.3.0 - Framework Plugins
-- [ ] React-specific checks
-- [ ] Vue-specific checks
-- [ ] Node.js best practices
-
-### v0.4.0 - Advanced Features
-- [ ] Test coverage analysis
-- [ ] Dependency vulnerability scanning
-- [ ] Dead code detection
-- [ ] Complexity analysis
-
-### v1.0.0 - Production Ready
-- [ ] All core integrations complete
-- [ ] VS Code extension
-- [ ] AI-powered code reviews
-- [ ] Comprehensive documentation
+**v0.2** - ESLint & Prettier integration  
+**v0.3** - TypeScript compiler integration  
+**v0.4** - Security scanning  
+**v0.5** - Test coverage analysis  
+**v1.0** - Production ready with full tool integration
 
 ## Contributing
 
-We welcome contributions! This is an open-source project built for the developer community.
+We welcome contributions!
 
-See [CONTRIBUTING.md](https://github.com/your-org/dev-guardrail/blob/main/CONTRIBUTING.md)
+- 🐛 [Report bugs](https://github.com/your-org/dev-guardrail/issues)
+- 💡 [Request features](https://github.com/your-org/dev-guardrail/discussions)
+- 🔧 [Submit PRs](https://github.com/your-org/dev-guardrail/pulls)
 
-## Support
+See [CONTRIBUTING.md](./CONTRIBUTING.md)
 
-- 📖 [Documentation](https://github.com/your-org/dev-guardrail/tree/main/docs)
-- 🐛 [Report Issues](https://github.com/your-org/dev-guardrail/issues)
-- 💬 [Discussions](https://github.com/your-org/dev-guardrail/discussions)
+## Documentation
+
+- [Getting Started](./docs/getting-started.md)
+- [Configuration](./docs/configuration.md)
+- [Plugin Development](./docs/plugin-development.md)
+- [CI Integration](./docs/ci-integration.md)
 
 ## License
 
@@ -246,4 +208,4 @@ MIT © dev-guardrail Contributors
 
 ---
 
-**Made with ❤️ for developers**
+**Simple, focused, effective** - Quality checks for JavaScript/TypeScript projects 🚀
