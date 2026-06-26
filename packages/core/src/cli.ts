@@ -58,21 +58,47 @@ program
       const categoryScores = await devguard.getCategoryScores(result);
       logger.categoryBreakdown(categoryScores);
       
+      // Show detailed issues
+      logger.divider();
+      logger.heading('Issues Found');
+      
+      if (result.summary.totalIssues === 0) {
+        logger.success('No issues found! 🎉');
+      } else {
+        // Group issues by severity
+        const errors = result.checkResults.flatMap(r => r.issues.filter(i => i.severity === 'error'));
+        const warnings = result.checkResults.flatMap(r => r.issues.filter(i => i.severity === 'warning'));
+        const info = result.checkResults.flatMap(r => r.issues.filter(i => i.severity === 'info'));
+        
+        if (errors.length > 0) {
+          logger.error(`\n${errors.length} Errors:`);
+          errors.slice(0, 10).forEach(issue => logger.issueDetail(issue));
+          if (errors.length > 10) {
+            logger.info(`... and ${errors.length - 10} more errors`);
+          }
+        }
+        
+        if (warnings.length > 0) {
+          logger.warning(`\n${warnings.length} Warnings:`);
+          warnings.slice(0, 10).forEach(issue => logger.issueDetail(issue));
+          if (warnings.length > 10) {
+            logger.info(`... and ${warnings.length - 10} more warnings`);
+          }
+        }
+        
+        if (options.verbose && info.length > 0) {
+          logger.info(`\n${info.length} Info:`);
+          info.slice(0, 5).forEach(issue => logger.issueDetail(issue));
+        }
+      }
+      
       // Summary
       logger.divider();
       logger.info(`Files Scanned: ${result.summary.filesScanned}`);
-      logger.info(`Issues Found: ${result.summary.totalIssues}`);
-      if (result.summary.errors > 0) {
-        logger.error(`  Errors: ${result.summary.errors}`);
-      }
-      if (result.summary.warnings > 0) {
-        logger.warning(`  Warnings: ${result.summary.warnings}`);
-      }
-      if (result.summary.info > 0) {
-        logger.info(`  Info: ${result.summary.info}`);
-      }
       logger.info(`Duration: ${(result.summary.duration / 1000).toFixed(2)}s`);
       logger.divider();
+      
+      logger.info('\nFor full report: npx devguard report --format html');
       
       if (options.ci) {
         const config = await devguard.getConfig();

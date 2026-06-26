@@ -9,6 +9,10 @@ import { FileSystem } from './utils/file-system';
 import { ConsoleLogCheck } from './checks/console-log-check';
 import { LargeFileCheck } from './checks/large-file-check';
 import { TodoCheck } from './checks/todo-check';
+import { PHPDebugCheck } from './checks/php-debug-check';
+import { PHPTodoCheck } from './checks/php-todo-check';
+import { PHPSyntaxCheck } from './checks/php-syntax-check';
+import { PHPLongMethodCheck } from './checks/php-long-method-check';
 
 /**
  * Main DevGuard class
@@ -237,15 +241,36 @@ npx devguard check --ci
     pluginManager: PluginManager,
     config: DevGuardConfig
   ): Promise<void> {
+    const detector = new ProjectDetector(this.projectPath);
+    const projectInfo = await detector.detect();
+    
+    const checks = [];
+    
+    // JavaScript/TypeScript checks
+    checks.push(new ConsoleLogCheck());
+    checks.push(new LargeFileCheck());
+    
+    if (config.checks.todoCheck?.enabled) {
+      checks.push(new TodoCheck());
+    }
+    
+    // PHP checks (if PHP project detected)
+    if (projectInfo.language.includes('php')) {
+      this.logger.info('PHP project detected - enabling PHP checks');
+      checks.push(new PHPDebugCheck());
+      checks.push(new PHPSyntaxCheck());
+      checks.push(new PHPLongMethodCheck());
+      
+      if (config.checks.todoCheck?.enabled) {
+        checks.push(new PHPTodoCheck());
+      }
+    }
+
     const nativePlugin = {
       name: '@devguard/native',
-      version: '0.1.0',
-      description: 'Native DevGuard checks',
-      checks: [
-        new ConsoleLogCheck(),
-        new LargeFileCheck(),
-        ...(config.checks.todoCheck?.enabled ? [new TodoCheck()] : []),
-      ],
+      version: '0.2.0',
+      description: 'Native DevGuard checks for JavaScript/TypeScript and PHP',
+      checks,
     };
 
     await pluginManager.register(nativePlugin);

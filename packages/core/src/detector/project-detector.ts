@@ -134,6 +134,13 @@ export class ProjectDetector {
     if (extensions.has('java')) languages.push('java');
     if (extensions.has('cs')) languages.push('csharp');
 
+    // Also check for PHP in specific Laravel locations
+    const hasLaravelApp = await FileSystem.exists(`${this.projectPath}/app`);
+    const hasArtisan = await FileSystem.exists(`${this.projectPath}/artisan`);
+    if ((hasLaravelApp && hasArtisan) && !languages.includes('php')) {
+      languages.push('php');
+    }
+
     return languages;
   }
 

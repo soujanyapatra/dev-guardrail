@@ -122,6 +122,26 @@ export class Logger {
     
     console.log('');
   }
+
+  /**
+   * Display issue detail with file location
+   */
+  issueDetail(issue: any): void {
+    const location = issue.file 
+      ? chalk.cyan(`  ${issue.file}:${issue.line || '?'}`)
+      : '';
+    
+    const ruleText = issue.rule ? chalk.gray(` [${issue.rule}]`) : '';
+    
+    console.log(`  ${issue.message}${ruleText}`);
+    if (location) {
+      console.log(location);
+    }
+    if (issue.suggestion) {
+      console.log(chalk.gray(`  💡 ${issue.suggestion}`));
+    }
+    console.log('');
+  }
 }
 
 export const logger = new Logger();

@@ -313,8 +313,12 @@ npm publish
 7. **Follow conventions** - Use standard category/severity
 8. **Optimize performance** - Parallel processing, minimal I/O
 
-## Example Plugins
+## Example: Native Plugin
 
-- [@devguard/javascript](../packages/javascript) - ESLint, TypeScript
-- [@devguard/security](../packages/security) - Semgrep, secrets
-- [@devguard/python](../packages/python) - Pylint, MyPy
+The `@devguard/native` plugin (built into core) demonstrates the plugin pattern:
+
+- 7 checks (3 for JS/TS, 4 for PHP)
+- Multiple categories (LINT, COMPLEXITY)
+- Auto-registration in core package
+
+See `packages/core/src/devguard.ts` for implementation.

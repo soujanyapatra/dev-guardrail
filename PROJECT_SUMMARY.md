@@ -49,14 +49,13 @@ No manual configuration of ESLint, Prettier, TypeScript, security scanners, or d
    - **FileSystem** - Async file operations
    - Type definitions for extensibility
 
-### ✅ JavaScript/TypeScript Plugin (`@devguard/javascript`)
+### ⚠️ JavaScript Plugin Package (Not Published)
 
 **Location:** `packages/javascript/`
 
-**Integrations:**
-- ESLint check
-- TypeScript type checking
-- Plugin architecture example
+**Status:** Code exists but is **not published to npm** and **not used** by the core package.
+
+Contains experimental ESLint and TypeScript integration code that could be completed in future versions.
 
 ### ✅ Documentation
 
@@ -136,21 +135,19 @@ Weighted scoring by category:
 
 ### Immediate Extensions
 
-1. **More Plugins**
-   - `@devguard/react` - React-specific checks (hooks, props, etc.)
-   - `@devguard/vue` - Vue-specific checks
-   - `@devguard/python` - Pylint, MyPy, Bandit integration
-   - `@devguard/php` - PHPStan, PHP_CodeSniffer
-   - `@devguard/security` - Semgrep, Gitleaks integration
-   - `@devguard/docker` - Hadolint integration
-
-2. **More Native Checks**
+1. **More Native Checks**
    - Hardcoded credentials detection
    - Circular dependency detection
    - Import order validation
    - Naming convention checks
    - Unused dependencies
    - Missing error handling
+
+2. **External Tool Integration Plugins**
+   - ESLint integration for advanced linting
+   - PHPStan for static analysis
+   - Prettier for code formatting
+   - Security scanning tools
 
 3. **Report Formats**
    - PDF generation

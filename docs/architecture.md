@@ -6,21 +6,28 @@ DevGuard is built on a modular plugin architecture that orchestrates multiple co
 
 ## Core Components
 
-### 1. Core Package (`@devguard/core`)
+### 1. Core Package (`dev-guardrail`)
 
-The foundation of DevGuard providing:
+The foundation providing:
 
 - **CLI Interface**: Command-line tool for running checks
 - **Configuration Management**: Load and manage user configuration
-- **Plugin System**: Register and manage plugins
-- **Scanner**: Orchestrate check execution
+- **Plugin System**: Register and manage plugins (architecture ready, expandable)
+- **Scanner**: Orchestrate check execution in parallel
 - **Scoring Engine**: Calculate overall quality scores
-- **Project Detector**: Auto-detect project types
-- **Report Generator**: Generate multiple report formats
+- **Project Detector**: Auto-detect project types and languages
+- **Report Generator**: Generate HTML, JSON, Markdown reports
 
 ### 2. Plugin System
 
-Plugins extend DevGuard with language or framework-specific checks:
+Currently there is **one plugin**:
+
+**`@devguard/native`** - Built-in checks (no installation needed)
+  - Includes all 7 native checks (3 for JS/TS, 4 for PHP)
+  - No additional installation required
+  - Automatically registered in the core package
+
+The plugin architecture is ready for extension:
 
 ```typescript
 interface Plugin {
@@ -30,26 +37,25 @@ interface Plugin {
   checks: Check[];
   rules?: Rule[];
   scoreWeight?: number;
-  initialize?(context: PluginContext): Promise<void>;
-  cleanup?(): Promise<void>;
 }
 ```
 
-#### Official Plugins
+You can create custom plugins by implementing this interface. See [Plugin Development Guide](./plugin-development.md) for details.
 
-- `@devguard/javascript` - ESLint, TypeScript, Prettier
-- `@devguard/react` - React-specific checks
-- `@devguard/vue` - Vue-specific checks
-- `@devguard/node` - Node.js security and best practices
-- `@devguard/python` - Pylint, MyPy, Bandit
-- `@devguard/php` - PHPStan, PHP_CodeSniffer
-- `@devguard/docker` - Hadolint
-- `@devguard/security` - Semgrep, secret scanning
-- `@devguard/testing` - Coverage checks
+### 3. Checks (Currently Implemented)
 
-### 3. Checks
+**JavaScript/TypeScript Checks:**
+- **ConsoleLogCheck** - Detects console.log/debugger statements
+- **LargeFileCheck** - Identifies files >500 lines or >100KB
+- **TodoCheck** - Finds TODO/FIXME comments (optional)
 
-Checks are individual quality validations:
+**PHP Checks:**
+- **PHPDebugCheck** - Detects dd(), dump(), var_dump(), print_r()
+- **PHPSyntaxCheck** - Validates PHP syntax using `php -l`
+- **PHPLongMethodCheck** - Detects methods >50 lines
+- **PHPTodoCheck** - Finds TODO/FIXME in PHP files
+
+All checks implement the `Check` interface:
 
 ```typescript
 interface Check {
@@ -132,53 +138,43 @@ ReportGenerator creates output
 Results displayed to user
 ```
 
-## Extension Points
+## What's Built (v0.2.0)
 
-### Custom Plugins
+### ✅ Core Package (`dev-guardrail`)
 
-Create third-party plugins:
+**Fully Functional:**
+- CLI with 7 commands
+- Configuration system (YAML/JSON)
+- Plugin architecture
+- Project detection (15+ frameworks)
+- Scoring engine
+- Report generation (HTML, JSON, Markdown)
+- Git hooks
+- CI/CD integration
 
-```typescript
-import { Plugin, BaseCheck } from '@devguard/core';
+### ✅ Native Checks
 
-export const myPlugin: Plugin = {
-  name: '@company/devguard-custom',
-  version: '1.0.0',
-  checks: [new MyCustomCheck()],
-};
-```
+**7 Checks Implemented:**
 
-### Custom Checks
+**JavaScript/TypeScript:**
+1. Console.log detection
+2. Large file detection
+3. TODO/FIXME detection
 
-Extend `BaseCheck` for custom validations:
+**PHP:**
+4. Debug statement detection (dd, dump, var_dump)
+5. Syntax validation
+6. Long method detection
+7. TODO/FIXME detection
 
-```typescript
-import { BaseCheck } from '@devguard/core';
+### 🔄 Future Expansion
 
-export class MyCheck extends BaseCheck {
-  name = 'my-check';
-  category = Category.LINT;
-  description = 'My custom check';
-
-  async run(context: CheckContext): Promise<CheckResult> {
-    // Implementation
-  }
-}
-```
-
-### Custom Rules
-
-Define rules without creating a full check:
-
-```typescript
-const rule: Rule = {
-  id: 'no-magic-numbers',
-  category: Category.LINT,
-  severity: Severity.WARNING,
-  message: 'Avoid magic numbers',
-  pattern: /\d{4,}/,
-};
-```
+The plugin architecture is ready for adding:
+- External linter integrations (ESLint, PHPStan)
+- Framework-specific checks (React, Vue, Laravel)
+- Security scanning tools
+- Test coverage analysis
+- Custom organizational checks
 
 ## Performance Considerations
 
@@ -202,22 +198,28 @@ const rule: Rule = {
 
 ## Technology Stack
 
-- **Language**: TypeScript (strict mode)
+- **Language**: TypeScript 5.3 (strict mode)
 - **Runtime**: Node.js 18+
 - **CLI**: Commander.js
-- **Config**: Cosmiconfig
+- **Config**: Cosmiconfig (YAML/JSON)
 - **Terminal UI**: Chalk, Ora
 - **Testing**: Vitest
-- **Build**: Turbo (monorepo)
-- **Package Manager**: npm workspaces
+- **Build**: TypeScript compiler
+- **Monorepo**: npm workspaces
 
-## Design Principles
+## Current Capabilities (v0.2.0)
 
-1. **Zero Configuration**: Works out of the box
-2. **Extensibility**: Plugin architecture for customization
-3. **Performance**: Fast scans through parallelization
-4. **Reliability**: Comprehensive test coverage
-5. **User Experience**: Clear feedback and beautiful output
-6. **Integration**: Easy CI/CD integration
-7. **Standards**: Follow industry best practices
-8. **Open Source**: Transparent and community-driven
+### What Works Today
+✅ Multi-language support (JavaScript, TypeScript, PHP)
+✅ 7 native quality checks
+✅ Intelligent quality scoring system
+✅ Beautiful HTML/JSON/Markdown reports
+✅ CI/CD integration ready
+✅ Git pre-commit hooks
+✅ Extensible plugin architecture
+
+### Perfect For
+- Laravel + Vue/React projects (checks both PHP and JS)
+- Node.js applications
+- Full-stack JavaScript/TypeScript projects
+- Any project needing code quality monitoring

@@ -135,12 +135,9 @@ include:
   - "src/**/*.js"
   - "src/**/*.jsx"
 
-# Plugin configuration
-plugins:
-  - "@devguard/javascript"
-  - "@devguard/react"
-  - "@devguard/security"
-  - "@devguard/testing"
+# Plugin configuration (optional - native plugin is always loaded)
+# Currently only custom plugins can be listed here
+plugins: []
 
 # Scoring weights (optional)
 scoring:

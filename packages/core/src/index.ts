@@ -15,6 +15,10 @@ export { BaseCheck } from './checks/base-check';
 export { ConsoleLogCheck } from './checks/console-log-check';
 export { LargeFileCheck } from './checks/large-file-check';
 export { TodoCheck } from './checks/todo-check';
+export { PHPDebugCheck } from './checks/php-debug-check';
+export { PHPTodoCheck } from './checks/php-todo-check';
+export { PHPSyntaxCheck } from './checks/php-syntax-check';
+export { PHPLongMethodCheck } from './checks/php-long-method-check';
 
 // Utilities
 export { Logger } from './utils/logger';

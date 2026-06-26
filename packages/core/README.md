@@ -1,6 +1,6 @@
 # dev-guardrail
 
-> Code quality checks for JavaScript/TypeScript projects
+> Code quality checks for JavaScript, TypeScript, and PHP projects
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![npm](https://img.shields.io/npm/v/dev-guardrail.svg)](https://www.npmjs.com/package/dev-guardrail)
@@ -21,48 +21,85 @@ npx devguard init
 npx devguard check
 ```
 
-> Use `npx devguard` for local installs, or `npm install -g dev-guardrail` for global access
+Works on pure JS/TS projects, PHP projects, or mixed Laravel + Vue/React projects!
 
 ## What It Does
 
-dev-guardrail checks your JavaScript/TypeScript code for common issues:
+dev-guardrail checks your code for common issues and gives you a quality score with detailed insights.
 
+### JavaScript/TypeScript Checks
 - 🔍 Finds `console.log()` and `debugger` statements
-- 📏 Detects large files that should be split
-- 📝 Flags TODO/FIXME comments (optional)
+- 📏 Detects large files (>500 lines or >100KB)
+- 📝 Flags TODO/FIXME comments
 
-Then gives you a quality score with a beautiful terminal UI.
+### PHP Checks  
+- 🐛 Finds debug statements (`dd()`, `dump()`, `var_dump()`, `print_r()`)
+- ✅ Validates PHP syntax
+- 📏 Detects long methods (>50 lines)
+- 📝 Flags TODO/FIXME comments in PHP
 
 ## Supported Languages
 
 - ✅ JavaScript (`.js`, `.jsx`)
 - ✅ TypeScript (`.ts`, `.tsx`)
+- ✅ PHP (`.php`)
 
-## How It Works
+Perfect for:
+- **Laravel + Vue** projects
+- **Laravel + React** projects
+- **Pure PHP** projects
+- **Pure JavaScript/TypeScript** projects
 
-1. **Initialize** - Run `npx devguard init` to create config
-2. **Check** - Run `npx devguard check` to scan your code
-3. **View Score** - See quality score with progress bars
-4. **Generate Reports** - Export results as HTML, JSON, or Markdown
+## Example Output
 
 ```bash
-npx devguard check
+$ npx devguard check
 
-DevGuard - Quality Scan
+dev-guardrail - Quality Scan
 ──────────────────────────────────
 
-Overall Score: 92% (Grade A)
+Detecting: Laravel + Vue
+Languages: PHP, JavaScript
+──────────────────────────────────
+
+Overall Score: 88% (Grade B+)
 ──────────────────────────────────
 
 Quality Breakdown:
 
 Console Logs     95% ████████████████████
 File Size        88% █████████████████
-TODOs            90% ██████████████████
+Debug Code       82% ████████████████
+Method Length    90% ██████████████████
 
-Files Scanned: 127
-Issues Found: 24
-Duration: 1.2s
+──────────────────────────────────
+Issues Found
+──────────────────────────────────
+
+3 Errors:
+  Found debug statement: dd() [no-debug-statements]
+  app/Http/Controllers/UserController.php:45
+  💡 Remove dd() before committing to production
+
+  Found debug statement: var_dump() [no-debug-statements]
+  app/Models/User.php:128
+  💡 Remove var_dump() before committing to production
+
+5 Warnings:
+  Method 'processUserData' is too long (67 lines) [max-method-length]
+  app/Services/UserService.php:89
+  💡 Consider splitting this method into smaller methods (max 50 lines)
+
+  Found console.log statement [no-console]
+  resources/js/components/Dashboard.vue:142
+  💡 Remove console statements or use a proper logging library
+
+──────────────────────────────────
+Files Scanned: 156
+Duration: 2.3s
+──────────────────────────────────
+
+For full report: npx devguard report --format html
 ```
 
 ## CLI Commands
@@ -70,7 +107,8 @@ Duration: 1.2s
 ```bash
 npx devguard init              # Initialize in your project
 npx devguard check             # Run quality checks
-npx devguard score             # Show quality score
+npx devguard check --verbose   # Show all issues including info
+npx devguard score             # Show quality score only
 npx devguard report            # Generate HTML/JSON report
 npx devguard doctor            # Check setup
 npx devguard hooks             # Install git hooks
@@ -93,17 +131,31 @@ checks:
     maxSizeKB: 100
   todoCheck:
     enabled: false
+  phpDebug:
+    enabled: true
+  phpSyntax:
+    enabled: true
+  phpLongMethod:
+    enabled: true
+    maxLines: 50
 ```
 
 ## Reports
 
-Generate reports in multiple formats:
+Generate detailed reports:
 
 ```bash
-npx devguard report --format html       # Visual HTML report
+npx devguard report --format html       # Visual HTML report with charts
 npx devguard report --format json       # Machine-readable JSON
 npx devguard report --format markdown   # Markdown for docs
 ```
+
+Reports include:
+- Overall quality score and grade
+- Issues by file with line numbers
+- Suggestions for fixing each issue
+- Category breakdowns
+- Trend analysis
 
 ## Git Hooks
 
@@ -112,8 +164,6 @@ Automatically run checks before commits:
 ```bash
 npx devguard hooks
 ```
-
-This installs a pre-commit hook that runs quality checks.
 
 ## CI/CD Integration
 
@@ -134,18 +184,81 @@ jobs:
       - run: npx devguard check --ci
 ```
 
-Works with GitLab CI, Bitbucket Pipelines, Jenkins, and all major CI platforms.
+Also works with GitLab CI, Jenkins, CircleCI, and all major CI platforms.
 
-## Project Detection
+## Laravel Projects
 
-Automatically detects your project type:
-- React, Vue, Next.js, Nuxt, Angular
-- Node.js, Express, NestJS
-- And shows it during initialization
+dev-guardrail works great with Laravel! It will automatically:
 
-## Extensible
+1. **Detect Laravel** - Recognizes Laravel projects
+2. **Check PHP code** - Validates controllers, models, services
+3. **Check frontend code** - If you have Vue/React in `resources/js/`
+4. **Give unified score** - Single quality score across all languages
 
-Build custom checks with the plugin API:
+**Example Laravel + Vue project:**
+```
+my-laravel-app/
+├── app/
+│   ├── Http/Controllers/  ← ✅ Checks PHP
+│   └── Models/            ← ✅ Checks PHP
+├── resources/
+│   └── js/
+│       ├── app.js        ← ✅ Checks JavaScript
+│       └── components/   ← ✅ Checks Vue files
+```
+
+## Pure PHP Projects
+
+Works perfectly on non-Laravel PHP projects too:
+
+```bash
+cd my-php-project
+npm init -y
+npm install -D dev-guardrail
+npx devguard init
+npx devguard check
+```
+
+Checks all `.php` files for quality issues!
+
+## Use Cases
+
+**For Developers:**
+- Catch issues before code review
+- Maintain consistent code quality
+- Learn best practices from suggestions
+
+**For Teams:**
+- Enforce coding standards
+- Prevent debug code in production
+- Keep methods and files manageable
+- Quality gates in CI/CD
+
+**For Laravel Projects:**
+- Check both backend (PHP) and frontend (JS/Vue)
+- Unified quality metrics
+- Catch common Laravel mistakes
+
+## What Makes It Special
+
+✨ **Multi-Language** - Works on both PHP and JavaScript in the same project  
+✨ **Detailed Insights** - Shows exactly where issues are and how to fix them  
+✨ **Zero Config** - Auto-detects Laravel, Vue, React, etc.  
+✨ **Fast** - Scans 100+ files in seconds  
+✨ **Actionable** - Every issue includes a suggestion  
+✨ **CI/CD Ready** - Perfect for automated quality gates  
+
+## Roadmap
+
+**v0.3** - ESLint & Prettier integration  
+**v0.4** - PHPStan integration  
+**v0.5** - Security scanning (SQL injection, XSS)  
+**v0.6** - Test coverage analysis  
+**v1.0** - Production ready with full tool ecosystem
+
+## Plugin Development
+
+Build custom checks:
 
 ```typescript
 import { Plugin, BaseCheck } from 'dev-guardrail';
@@ -159,32 +272,6 @@ export const myPlugin: Plugin = {
 
 See [Plugin Development Guide](./docs/plugin-development.md)
 
-## Use Cases
-
-**For Developers:**
-- Catch issues before code review
-- Maintain code quality standards
-- Track quality metrics over time
-
-**For Teams:**
-- Enforce coding standards
-- Prevent console.log in production
-- Keep files manageable size
-- CI/CD quality gates
-
-**For Projects:**
-- Onboarding new developers
-- Technical debt tracking
-- Quality monitoring
-
-## Roadmap
-
-**v0.2** - ESLint & Prettier integration  
-**v0.3** - TypeScript compiler integration  
-**v0.4** - Security scanning  
-**v0.5** - Test coverage analysis  
-**v1.0** - Production ready with full tool integration
-
 ## Contributing
 
 We welcome contributions!
@@ -192,8 +279,6 @@ We welcome contributions!
 - 🐛 [Report bugs](https://github.com/your-org/dev-guardrail/issues)
 - 💡 [Request features](https://github.com/your-org/dev-guardrail/discussions)
 - 🔧 [Submit PRs](https://github.com/your-org/dev-guardrail/pulls)
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## Documentation
 
@@ -208,4 +293,4 @@ MIT © dev-guardrail Contributors
 
 ---
 
-**Simple, focused, effective** - Quality checks for JavaScript/TypeScript projects 🚀
+**World-class code quality for JavaScript, TypeScript, and PHP** 🚀
