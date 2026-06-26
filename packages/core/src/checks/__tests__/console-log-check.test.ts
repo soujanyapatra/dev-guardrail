@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ConsoleLogCheck } from '../console-log-check.js';
-import { CheckContext } from '../../types/index.js';
-import { FileSystem } from '../../utils/file-system.js';
+import { ConsoleLogCheck } from '../console-log-check';
+import { CheckContext } from '../../types/index';
+import { FileSystem } from '../../utils/file-system';
 
 describe('ConsoleLogCheck', () => {
   let check: ConsoleLogCheck;

@@ -1,4 +1,4 @@
-import { Check, CheckResult, CheckContext, Category, Issue } from '../types/index.js';
+import { Check, CheckResult, CheckContext, Category, Issue } from '../types/index';
 
 /**
  * Abstract base class for checks
@@ -100,7 +100,7 @@ export abstract class BaseCheck implements Check {
   /**
    * Check if check should run
    */
-  shouldRun(context: CheckContext): boolean {
+  shouldRun(_context: CheckContext): boolean {
     return this.enabled;
   }
 }

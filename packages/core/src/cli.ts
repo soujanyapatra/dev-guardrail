@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { DevGuard } from './devguard.js';
-import { Logger } from './utils/logger.js';
-import { FileSystem } from './utils/file-system.js';
+import { DevGuard } from './devguard';
+import { Logger } from './utils/logger';
 
 const logger = new Logger();
 const program = new Command();

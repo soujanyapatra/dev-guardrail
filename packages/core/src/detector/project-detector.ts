@@ -1,5 +1,5 @@
-import { FileSystem } from '../utils/file-system.js';
-import { ProjectInfo } from '../types/index.js';
+import { FileSystem } from '../utils/file-system';
+import { ProjectInfo } from '../types/index';
 
 /**
  * Detects project type, languages, and frameworks

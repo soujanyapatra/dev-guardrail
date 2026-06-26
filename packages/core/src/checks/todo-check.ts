@@ -1,6 +1,6 @@
-import { BaseCheck } from './base-check.js';
-import { CheckResult, CheckContext, Category, Severity } from '../types/index.js';
-import { FileSystem } from '../utils/file-system.js';
+import { BaseCheck } from './base-check';
+import { CheckResult, CheckContext, Category, Severity, Issue } from '../types/index';
+import { FileSystem } from '../utils/file-system';
 
 /**
  * Detects TODO and FIXME comments
@@ -12,7 +12,7 @@ export class TodoCheck extends BaseCheck {
 
   async run(context: CheckContext): Promise<CheckResult> {
     const [issues, duration] = await this.measureTime(async () => {
-      const issues = [];
+      const issues: Issue[] = [];
       const files = context.files;
 
       const todoPatterns = [

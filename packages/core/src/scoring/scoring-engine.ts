@@ -1,4 +1,4 @@
-import { CheckResult, ScanResult, Category } from '../types/index.js';
+import { CheckResult, ScanResult, Category } from '../types/index';
 
 /**
  * Scoring weights for each category

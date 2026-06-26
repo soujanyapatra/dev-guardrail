@@ -1,9 +1,9 @@
 import pLimit from 'p-limit';
-import { CheckContext, ScanResult, DevGuardConfig } from '../types/index.js';
-import { PluginManager } from '../plugin/plugin-manager.js';
-import { ScoringEngine } from '../scoring/scoring-engine.js';
-import { FileSystem } from '../utils/file-system.js';
-import { Logger } from '../utils/logger.js';
+import { CheckContext, ScanResult, DevGuardConfig } from '../types/index';
+import { PluginManager } from '../plugin/plugin-manager';
+import { ScoringEngine } from '../scoring/scoring-engine';
+import { FileSystem } from '../utils/file-system';
+import { Logger } from '../utils/logger';
 
 /**
  * Main scanner that orchestrates all checks

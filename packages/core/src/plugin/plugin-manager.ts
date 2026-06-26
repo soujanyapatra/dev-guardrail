@@ -1,5 +1,5 @@
-import { Plugin, PluginContext, Check } from '../types/index.js';
-import { Logger } from '../utils/logger.js';
+import { Plugin, PluginContext, Check } from '../types/index';
+import { Logger } from '../utils/logger';
 
 /**
  * Manages plugins and their lifecycle

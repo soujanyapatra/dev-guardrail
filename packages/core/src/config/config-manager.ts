@@ -1,7 +1,7 @@
 import { cosmiconfig } from 'cosmiconfig';
 import yaml from 'js-yaml';
-import { FileSystem } from '../utils/file-system.js';
-import { DevGuardConfig, CheckConfig } from '../types/index.js';
+import { FileSystem } from '../utils/file-system';
+import { DevGuardConfig, CheckConfig } from '../types/index';
 
 /**
  * Default configuration

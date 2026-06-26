@@ -1,6 +1,6 @@
-import { BaseCheck } from './base-check.js';
-import { CheckResult, CheckContext, Category, Severity } from '../types/index.js';
-import { FileSystem } from '../utils/file-system.js';
+import { BaseCheck } from './base-check';
+import { CheckResult, CheckContext, Category, Severity } from '../types/index';
+import { FileSystem } from '../utils/file-system';
 
 /**
  * Detects large files that should be split

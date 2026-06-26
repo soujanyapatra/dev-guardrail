@@ -1,13 +1,13 @@
-import { ConfigManager } from './config/config-manager.js';
-import { PluginManager } from './plugin/plugin-manager.js';
-import { Scanner } from './scanner/scanner.js';
-import { ProjectDetector } from './detector/project-detector.js';
-import { DevGuardConfig, ScanResult, ReportFormat } from './types/index.js';
-import { Logger } from './utils/logger.js';
-import { FileSystem } from './utils/file-system.js';
-import { ConsoleLogCheck } from './checks/console-log-check.js';
-import { LargeFileCheck } from './checks/large-file-check.js';
-import { TodoCheck } from './checks/todo-check.js';
+import { ConfigManager } from './config/config-manager';
+import { PluginManager } from './plugin/plugin-manager';
+import { Scanner } from './scanner/scanner';
+import { ProjectDetector } from './detector/project-detector';
+import { DevGuardConfig, ScanResult } from './types/index';
+import { Logger } from './utils/logger';
+import { FileSystem } from './utils/file-system';
+import { ConsoleLogCheck } from './checks/console-log-check';
+import { LargeFileCheck } from './checks/large-file-check';
+import { TodoCheck } from './checks/todo-check';
 
 /**
  * Main DevGuard class
