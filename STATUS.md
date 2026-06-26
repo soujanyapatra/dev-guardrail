@@ -1,7 +1,7 @@
 # dev-guardrail Implementation Status
 
 **Last Updated:** June 2026  
-**Current Version:** 0.2.0
+**Current Version:** 0.3.0
 
 ## ✅ What's Implemented and Working
 
@@ -22,18 +22,45 @@
 - ✅ TypeScript (`.ts`, `.tsx`)
 - ✅ PHP (`.php`)
 
-### Native Checks (7 Total)
+### Native Checks (11 Total)
 
-**JavaScript/TypeScript (3 checks):**
-1. ✅ Console.log detection - Finds `console.log()` and `debugger`
-2. ✅ Large file detection - Files >500 lines or >100KB
-3. ✅ TODO detection - Finds TODO/FIXME comments (optional)
+**Security Checks (2 checks) - Critical:**
+1. ✅ **Secret Detection** - Detects API keys, passwords, tokens, AWS keys, database credentials, JWT tokens, GitHub tokens, private keys
+2. ✅ **Security Patterns** - SQL injection, XSS vulnerabilities, command injection, weak password hashing (md5/sha1), unsafe unserialize, eval usage, SSRF risks
+
+**JavaScript/TypeScript (5 checks):**
+3. ✅ Console.log detection - Finds `console.log()` and `debugger`
+4. ✅ Large file detection - Files >700 lines or >100KB
+5. ✅ Error handling - Missing try-catch, empty catch blocks, unhandled promises, throwing strings
+6. ✅ Naming conventions - PascalCase classes, camelCase functions, Hungarian notation detection
+7. ✅ TODO detection - Finds TODO/FIXME comments (optional)
 
 **PHP (4 checks):**
-4. ✅ Debug statement detection - Finds `dd()`, `dump()`, `var_dump()`, `print_r()`
-5. ✅ Syntax validation - Uses `php -l` to check syntax
-6. ✅ Long method detection - Methods >50 lines
-7. ✅ TODO detection - Finds TODO/FIXME in PHP
+8. ✅ Debug statement detection - Finds `dd()`, `dump()`, `var_dump()`, `print_r()`, `error_log()`
+9. ✅ Syntax validation - Uses `php -l` to check syntax
+10. ✅ Long method detection - Methods >50 lines
+11. ✅ TODO detection - Finds TODO/FIXME in PHP (optional)
+
+### Security Coverage
+✅ Hardcoded secrets and credentials  
+✅ SQL injection via string concatenation  
+✅ XSS through innerHTML/unescaped output  
+✅ Command injection in system calls  
+✅ Weak cryptographic functions  
+✅ Open redirect vulnerabilities  
+✅ SSRF (Server-Side Request Forgery)  
+✅ Unsafe deserialization  
+✅ Error suppression detection  
+✅ Sensitive data in localStorage  
+
+### Code Quality Coverage
+✅ Debug statement detection (JS & PHP)  
+✅ File size and complexity  
+✅ Error handling patterns  
+✅ Naming conventions (PSR-1 for PHP, standard JS/TS)  
+✅ Empty catch blocks  
+✅ Generic exception catching  
+✅ Method length detection  
 
 ### Output Features
 - ✅ Overall quality score (0-100)
@@ -102,50 +129,53 @@ Auto-detects:
 ✅ Node.js APIs with frontend  
 
 ### Use Cases:
+✅ **Security scanning** - Find hardcoded secrets, SQL injection, XSS  
 ✅ Catching debug statements before production  
 ✅ Finding large files that need refactoring  
-✅ Basic code quality checks  
+✅ Enforcing error handling patterns  
+✅ Validating naming conventions  
 ✅ CI/CD quality gates  
 ✅ Team coding standards enforcement  
 
-## 🚧 Not Ready For
+## 🚧 Limited Support For
 
-### Limited Use For:
-❌ Python-only projects (detection only, no checks)  
-❌ Projects needing ESLint/Prettier integration  
-❌ Security-focused scanning  
-❌ Comprehensive static analysis  
-❌ Projects needing framework-specific checks  
+### Works But Limited:
+⚠️ Python-only projects (detection only, no checks)  
+⚠️ Projects needing deep static analysis (use PHPStan/TypeScript compiler)  
+⚠️ Framework-specific checks (React hooks, Laravel policies, etc.)  
 
 ## 📊 Comparison
 
 ### vs. Full Solutions (PHPStan, ESLint, etc.)
 **dev-guardrail:**
 - ✅ Multi-language (PHP + JS/TS)
+- ✅ Security-focused checks
 - ✅ Unified scoring
 - ✅ Beautiful reports
 - ✅ Zero config
-- ❌ Limited checks (7 only)
-- ❌ No deep analysis
+- ✅ 11 comprehensive checks
+- ❌ No type checking
+- ❌ No deep static analysis
 
 **PHPStan/ESLint:**
-- ✅ Comprehensive analysis
-- ✅ Deep inspection
+- ✅ Comprehensive static analysis
+- ✅ Type checking
 - ❌ Single language
 - ❌ Complex setup
 - ❌ No unified reports
+- ❌ No security checks
 
 ### The Value Proposition
 
-dev-guardrail is **not a replacement** for dedicated tools like ESLint or PHPStan.
+dev-guardrail provides **security + quality checks** in one tool:
 
-It's a **quick quality overview** tool that:
-1. Works across PHP + JavaScript in one command
-2. Gives you a single quality score
-3. Shows the most obvious issues
-4. Requires zero configuration
+1. **Security First** - Find secrets, SQL injection, XSS before they hit production
+2. **Multi-language** - Works across PHP + JavaScript in one command
+3. **Quick Overview** - Single quality score with detailed breakdown
+4. **Zero Config** - Works out of the box
+5. **Production Ready** - Catches the issues that matter most
 
-Think of it as "Lighthouse for code" - quick insights, not deep analysis.
+Use it **for security and quality checks**, then use PHPStan/ESLint for deeper analysis.
 
 ## 🗺️ Roadmap
 
@@ -173,23 +203,24 @@ Think of it as "Lighthouse for code" - quick insights, not deep analysis.
 ## 💬 Honest Assessment
 
 **What we've built:**
-- A solid foundation
+- A comprehensive security and quality scanner
 - Multi-language support (PHP + JS/TS)
-- Beautiful UX
-- 7 useful checks
+- 11 production-grade checks
+- Beautiful UX with detailed reporting
+- Real security vulnerability detection
 
 **What we haven't built:**
-- Deep static analysis
-- Comprehensive tool integration
+- Type checking (use TypeScript compiler)
+- Deep static analysis (use PHPStan/ESLint)
 - Framework-specific intelligence
-- Large check library
+- External tool orchestration
 
 **Should you use it?**
-- ✅ Yes, for quick quality checks on mixed codebases
-- ✅ Yes, for catching obvious issues
-- ✅ Yes, for CI/CD quality gates
-- ❌ No, as your only quality tool
-- ❌ No, for security-critical analysis
-- ❌ No, as ESLint/PHPStan replacement
+- ✅ **Yes, for security checks** - Find secrets, SQL injection, XSS
+- ✅ Yes, for quality gates in CI/CD
+- ✅ Yes, for catching obvious code issues
+- ✅ Yes, for multi-language projects
+- ⚠️ Also use PHPStan/ESLint for deeper analysis
+- ⚠️ Also use dedicated security tools for comprehensive scans
 
-Use it **alongside** your existing tools, not **instead of** them.
+Use it **for broad security + quality checks**, then use specialized tools for deep analysis.
