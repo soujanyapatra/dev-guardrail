@@ -76,6 +76,52 @@ export class Logger {
   clear(): void {
     process.stdout.write('\x1Bc');
   }
+
+  /**
+   * Display a category score with progress bar
+   */
+  categoryScore(category: string, score: number): void {
+    const maxBars = 20;
+    const bars = Math.floor((score / 100) * maxBars);
+    const filledBar = '█'.repeat(bars);
+    const emptyBar = '░'.repeat(maxBars - bars);
+    
+    // Color based on score
+    let barColor = chalk.green;
+    if (score < 70) barColor = chalk.red;
+    else if (score < 85) barColor = chalk.yellow;
+    
+    const paddedCategory = category.padEnd(15);
+    const paddedScore = `${score}%`.padStart(4);
+    
+    console.log(`${paddedCategory} ${paddedScore} ${barColor(filledBar)}${chalk.gray(emptyBar)}`);
+  }
+
+  /**
+   * Display overall score with grade
+   */
+  overallScore(score: number, grade: string): void {
+    console.log('\n' + chalk.bold.cyan('─'.repeat(50)));
+    
+    // Large score display
+    const scoreColor = score >= 90 ? chalk.green : score >= 80 ? chalk.yellow : score >= 70 ? chalk.yellow : chalk.red;
+    console.log(chalk.bold(`\n  Overall Score: ${scoreColor(score + '%')} (Grade ${scoreColor(grade)})\n`));
+    
+    console.log(chalk.bold.cyan('─'.repeat(50)));
+  }
+
+  /**
+   * Display category breakdown
+   */
+  categoryBreakdown(categories: Record<string, number>): void {
+    console.log('\n' + chalk.bold('Quality Breakdown:\n'));
+    
+    for (const [category, score] of Object.entries(categories)) {
+      this.categoryScore(category, score);
+    }
+    
+    console.log('');
+  }
 }
 
 export const logger = new Logger();

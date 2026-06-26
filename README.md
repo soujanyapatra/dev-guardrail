@@ -9,25 +9,35 @@
 
 ```bash
 # Install
-npm install -D devguard
+npm install -D dev-guardrail
 
 # Initialize
 npx devguard init
 
 # Run quality checks
-devguard check
+npx devguard check
 ```
 
 That's it! DevGuard automatically detects your project type, installs required dependencies, and runs comprehensive quality checks.
+
+## Installation
+
+```bash
+npm install -D dev-guardrail
+```
+
+**Package:** `dev-guardrail` | **CLI:** `devguard`
+
+> Use `npx devguard` for local installs, or `npm install -g dev-guardrail` for global access
 
 ## Features
 
 ✅ **Zero Configuration** - Works out of the box for 15+ frameworks  
 ✅ **Comprehensive Checks** - Linting, security, testing, complexity, and more  
 ✅ **Quality Scoring** - Get an overall engineering health score  
-✅ **AI-Powered Reviews** - Intelligent recommendations for improvements  
+✅ **AI-Powered Reviews** - Intelligent recommendations for improvements (coming soon)  
 ✅ **Git Hook Integration** - Automatic pre-commit and pre-push hooks  
-✅ **Beautiful Reports** - HTML, JSON, Markdown, and PDF outputs  
+✅ **Beautiful Reports** - HTML, JSON, Markdown outputs  
 ✅ **CI/CD Ready** - Templates for all major CI platforms  
 ✅ **Extensible** - Plugin architecture for custom checks  
 

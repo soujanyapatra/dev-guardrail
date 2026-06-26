@@ -15,10 +15,12 @@ npm install -D dev-guardrail
 npx devguard init
 
 # Run quality checks
-devguard check
+npx devguard check
 ```
 
 That's it! DevGuard automatically detects your project type and runs comprehensive quality checks.
+
+> **Note:** Always use `npx devguard` when installed as a dev dependency, or install globally with `npm install -g dev-guardrail` to use `devguard` directly.
 
 ## What is DevGuard?
 
@@ -40,12 +42,33 @@ Instead of manually configuring ESLint, Prettier, TypeScript, security scanners,
 ## CLI Commands
 
 ```bash
-devguard init              # Initialize DevGuard
-devguard check             # Run all quality checks
-devguard score             # Show quality score
-devguard report            # Generate detailed report
-devguard doctor            # Diagnose setup issues
-devguard hooks             # Install Git hooks
+npx devguard init              # Initialize DevGuard
+npx devguard check             # Run all quality checks
+npx devguard score             # Show quality score
+npx devguard report            # Generate detailed report
+npx devguard doctor            # Diagnose setup issues
+npx devguard hooks             # Install Git hooks
+```
+
+### Add to package.json Scripts (Recommended)
+
+```json
+{
+  "scripts": {
+    "quality": "devguard check",
+    "quality:score": "devguard score",
+    "quality:report": "devguard report"
+  }
+}
+```
+
+Then run with `npm run quality`
+
+### Global Installation (Optional)
+
+```bash
+npm install -g dev-guardrail
+devguard check  # Now works without npx
 ```
 
 ## Built-in Checks
@@ -106,6 +129,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
       - run: npm ci
       - run: npx devguard check --ci
 ```

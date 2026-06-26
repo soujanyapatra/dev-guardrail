@@ -51,15 +51,27 @@ program
       
       const result = await devguard.check();
       
-      // Display results
+      // Display results with beautiful UI
+      logger.overallScore(result.overallScore, result.grade);
+      
+      // Get category scores
+      const categoryScores = await devguard.getCategoryScores(result);
+      logger.categoryBreakdown(categoryScores);
+      
+      // Summary
       logger.divider();
-      logger.heading(`Overall Score: ${result.overallScore}% (Grade ${result.grade})`);
       logger.info(`Files Scanned: ${result.summary.filesScanned}`);
       logger.info(`Issues Found: ${result.summary.totalIssues}`);
-      logger.error(`  Errors: ${result.summary.errors}`);
-      logger.warning(`  Warnings: ${result.summary.warnings}`);
-      logger.info(`  Info: ${result.summary.info}`);
-      logger.info(`Duration: ${result.summary.duration}ms`);
+      if (result.summary.errors > 0) {
+        logger.error(`  Errors: ${result.summary.errors}`);
+      }
+      if (result.summary.warnings > 0) {
+        logger.warning(`  Warnings: ${result.summary.warnings}`);
+      }
+      if (result.summary.info > 0) {
+        logger.info(`  Info: ${result.summary.info}`);
+      }
+      logger.info(`Duration: ${(result.summary.duration / 1000).toFixed(2)}s`);
       logger.divider();
       
       if (options.ci) {
@@ -90,14 +102,19 @@ program
       
       logger.clear();
       logger.heading('DevGuard Quality Score');
+      
+      // Display overall score
+      logger.overallScore(result.overallScore, result.grade);
+      
+      // Display category breakdown
+      const categoryScores = await devguard.getCategoryScores(result);
+      logger.categoryBreakdown(categoryScores);
+      
+      // Summary
       logger.divider();
-      console.log(`
-  Overall Score: ${result.overallScore}%
-  Grade: ${result.grade}
-  
-  Files Scanned: ${result.summary.filesScanned}
-  Total Issues: ${result.summary.totalIssues}
-      `);
+      console.log(`  Files Scanned: ${result.summary.filesScanned}`);
+      console.log(`  Total Issues: ${result.summary.totalIssues}`);
+      logger.divider();
     } catch (error) {
       logger.error(`Score calculation failed: ${(error as Error).message}`);
       process.exit(1);

@@ -3,6 +3,7 @@ import { PluginManager } from './plugin/plugin-manager';
 import { Scanner } from './scanner/scanner';
 import { ProjectDetector } from './detector/project-detector';
 import { DevGuardConfig, ScanResult } from './types/index';
+import { ScoringEngine } from './scoring/scoring-engine';
 import { Logger } from './utils/logger';
 import { FileSystem } from './utils/file-system';
 import { ConsoleLogCheck } from './checks/console-log-check';
@@ -190,6 +191,14 @@ npx devguard check --ci
    */
   async getConfig(): Promise<DevGuardConfig> {
     return this.configManager.load();
+  }
+
+  /**
+   * Get category scores from scan result
+   */
+  async getCategoryScores(result: ScanResult): Promise<Record<string, number>> {
+    const scoringEngine = new ScoringEngine();
+    return scoringEngine.getCategoryScores(result);
   }
 
   /**
